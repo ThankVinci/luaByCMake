@@ -30,5 +30,5 @@ TARGET_LINK_LIBRARIES(lua liblua) #链接可执行文件和静态库
 add_executable(luac ${LUAC_PATH}) #添加生成可执行文件目标luac
 TARGET_LINK_LIBRARIES(luac liblua) #链接可执行文件和静态库
 
-#为了避免干扰最后才生成动态库
+#为了避免干扰最后才生成动态库（傻了，静态库和动态库名字不一样应该不会产生干扰）
 add_library(lua54 SHARED ${LIB_SRC_FILES}) #添加生成动态库目标lua54
