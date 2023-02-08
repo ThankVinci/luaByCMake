@@ -12,7 +12,7 @@ project ("luaByCMake")
 
 message(STATUS ${CMAKE_C_COMPILER_ID}) #w为了方便起见，一进来就打印出编译器
 
-set(CMAKE_C_FLAGS "-O2 -Wall") # 去掉-Wall可以不显示所有警告
+set(CMAKE_C_FLAGS "-O2 ") # 去掉-Wall可以不显示所有警告
 if(CMAKE_HOST_UNIX)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wextra -DLUA_COMPAT_5_3 -DLUA_USE_LINUX")
 elseif(CMAKE_HOST_WIN32)
