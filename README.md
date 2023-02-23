@@ -9,9 +9,45 @@
 
 注：本项目仅在VS2019上测试通过
 
+## 编译注意事项
+
+为了防止污染源代码，项目中存在着build目录，其中有三个目录，GNU、MinGW、MSVC
+
+1. 在Linux下，进入build/GNU，输入：
+
+   ```shell
+   cmake ../../
+   ```
+
+   在GNU目录下创建出makefile项目
+
+2. 在Windows下，进入build/MinGW，输入：
+
+   ```cmd
+   cmake -G "MinGW Makefiles" ../../
+   ```
+
+   在MinGW目录下创建出makefile项目
+
+3. 在Windows下，进入build/MSVC，输入：
+
+   ```cmd
+   cmake ../../
+   ```
+
+   在MSVC目录下创建出VS项目
+
+4. 其他平台尚未测试
 
 
-2023.2.8更新
+
+
+
+[TOC]
+
+# 折腾之路
+
+## 2023.2.8更新
 
 发现MinGW编译lua是链接了动态库，但是使用MSVC编译发现：
 
@@ -72,3 +108,146 @@
 2. MinGW相关的参数也应该如法炮制，由于我发现了lua使用了一个宏来使得MinGW编译时可以导出接口（不过似乎没有dll导出接口时MinGW编译照样可以导出一个引导库），所以最终的改动还是挺大的，直接见CMakeLists文件就行了。
 
 经过今天这一折腾，倒是了解了一点make的知识，编译的相关参数。
+
+## 2023.2.24更新
+
+1. 2.28的cmake代码已经弃用，但是我不会删除，可以回过头来看一下当初踩的坑；
+
+2. 本次更新主要是进行了一个规范化的处理，提高一些可读性吧，比如说把win32不需要链接的数学库等，使用cmake的新api去添加到编译器选项或者预处理里面：
+
+   ```cmake
+   add_compile_options(-Wl,-E )
+   add_compile_options(-lm -ldl ) #加载数学库、显示加载动态库
+   ```
+
+3. 然后是为不同的编译器、平台去添加编译器选项和预处理选项，又看了lua源码的makefile文件、cmake的一些api，然后又对比了makefile中mingw、linux的区别（最后还是加了一个MacOSX的一些编译选项。
+
+4. 本次更新搭建了一个cmake项目的框架，修改后的CMakeLists文件如下：
+
+   ```cmake
+   # CMakeList.txt: luaByCMake 的 CMake 项目，在此处包括源代码并定义
+   # 项目特定的逻辑。
+   #
+   cmake_minimum_required (VERSION 3.10)
+   
+   #######弃用1#############
+   if(WIN32) #如果是MSVC项目的话，请把set(ENV{PATH}..)那一行注释掉，以免干扰MSVC找编译器
+   set(MINGW_HOME $ENV{MINGW_HOME}) #获取系统的环境变量MINGW_HOME，前提是系统环境变量中有这个变量，不然还是得手动添加绝对路径
+   #set(ENV{PATH} $ENV{MINGW_HOME}\\bin) #由于cmake过程中只需要编译链接的工具，所以就在作用域内直接把环境变量PATH设置为MinGW的bin目录
+   endif()
+   #######弃用1结束#########
+   
+   #设置项目名
+   project ("luaByCMake")
+   
+   message(STATUS ${CMAKE_C_COMPILER_ID}) #为了方便起见，一进来就打印出编译器
+   
+   #########设置编译器选项和预定义选项##############
+   #设置通用的编译器选项、预定义
+   add_compile_options(-O2 ) #-Wall开启全部警告
+   add_compile_definitions(NDEBUG )
+   add_compile_definitions(LUA_COMPAT_5_3 )
+   
+   #以下分编译器的编译器选项和预定义
+   if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+   if(WIN32)
+   add_compile_options(-s )
+   endif()
+   elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+   ##喵喵喵
+   else()
+   ##其他情况
+   endif()
+   #以下分平台的编译器选项和预定义
+   if(WIN32) 
+   #MSVC动态库需要暴露接口，所以要添加编译器预定义暴露接口(使用lua源码自带的预定义)
+   add_compile_definitions(LUA_BUILD_AS_DLL)
+   else()
+   add_compile_options(-Wl,-E )
+   add_compile_options(-lm -ldl ) #加载数学库、显示加载动态库
+   if(APPLE)
+   add_compile_options(-lreadline )
+   add_compile_definitions(LUA_USE_MACOSX )
+   add_compile_definitions(LUA_USE_READLINE )
+   else()
+   add_compile_definitions(LUA_USE_LINUX )
+   endif()
+   endif()
+   #########设置编译器选项和预定义选项##############
+   
+   #########设置目标生成目录##############
+   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin) #设置可执行文件输出目录（Windows下dll会产生在这个目录下）
+   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置动态库输出目录
+   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置静态库输出目录
+   #########设置目标生成目录##############
+   
+   #######设置头文件包含目录和编译源文件################
+   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include) #设置头文件所在目录
+   aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src LIB_SRC_FILES) #设置要生成的静态库的源文件所在目录，从而选中该目录下所有文件
+   #这两个文件编译静态库的时候要排除
+   set(LUA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/lua.c) #编译可执行文件lua的时候需要
+   set(LUAC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/luac.c) #编译可执行文件luac的时候需要
+   
+   list(REMOVE_ITEM LIB_SRC_FILES  ${LUA_PATH} ${LUAC_PATH}) #从源文件中剔除lua.c和luac.c,注意这里必须传入的是绝对路径，否则无法删除
+   #######设置头文件包含目录和编译源文件################
+   
+   ###########添加生成库目标################
+   add_library(liblua_static STATIC ${LIB_SRC_FILES}) #添加生成静态库目标liblua_static
+   add_library(liblua_shared SHARED ${LIB_SRC_FILES}) #添加生成动态库目标liblua_shared
+   
+   if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+   set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #GNU编译产生的库名前面会自己加上lib
+   set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+   elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+   set_target_properties(liblua_static PROPERTIES OUTPUT_NAME liblua) #MSVC编译产生的库名就是原来的库名
+   set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua54)
+   else()
+   #其他情况下没试过，手头没有MacOS设备，半夜三更的也懒得装个黑苹果试试
+   endif()
+   ###########添加生成库目标################
+   
+   ###########添加生成可执行文件目标################
+   add_executable(luac ${LUAC_PATH}) #添加生成可执行文件目标luac
+   add_executable(lua ${LUA_PATH}) #添加生成可执行文件目标lua
+   
+   target_link_libraries(luac liblua_static ) #链接可执行文件和静态库和系统库
+   if(CMAKE_HOST_UNIX)
+   target_link_libraries(lua liblua_static ) #链接可执行文件和静态库和系统库
+   elseif(CMAKE_HOST_WIN32)
+   #最上面的代码中WIN32加上了LUA_BUILD_AS_DLL编译参数，使得VS项目中具有函数导出接口，所以可以直接进行连接动态库
+   target_link_libraries(lua liblua_shared )
+   else()
+   #其他情况下没试过
+   endif()
+   ###########添加生成可执行文件目标################
+   
+   
+   
+   ###########添加生成子项目目录################
+   add_subdirectory(libdemo ) #添加子项目目录
+   ###########添加生成子项目目录################
+   ```
+
+
+
+# 总结一下踩的坑
+
+## 1.导出函数的问题
+
+在MSVC下必须使用导出接口进行函数接口导出，否则要链接动态库的时候找不到函数；
+
+MinGW和GNU的话不需要进行函数接口导出，函数接口本身就是暴露的。
+
+使用vs工具dumpbin查看函数接口可以发现，MSVC编译的lua54.dll只有153个函数接口，而MinGW编译的liblua.dll有344个函数接口：
+
+```cmd
+dumpbin /exports dllPath
+```
+
+## 2.不同编译器的库不能混用的问题
+
+不同操作系统的库不能混用，这是常识，但是不同编译器的库不能混用我倒是不知道，就描述一下遇到的问题：
+
+我电脑中Path中的lua是使用MinGW编译的，但是我为了测试cmake配置跨平台项目，于是用vs打开cmake项目进行编译，然后把生成的lua模块放到我电脑Path的lua的路径中，结果一直找不到模块，但是相同的项目使用MinGW编译出的模块却可以，一开始我是一直在想是不是导出接口的问题，找了好几个小时，最后我才反应过来可能是编译器不同的原因。
+
+也许应该有一个通用的什么标识可以让MSVC和MinGW编译的库可以互认，但是个人感觉没这个必要。
