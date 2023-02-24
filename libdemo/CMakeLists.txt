@@ -36,12 +36,11 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src DEMOLIB_SRC_FILES)
 
 ###########添加生成库目标################
 #注：由于lua库名称的限制以及GNU编译器编译库文件名的特性，所以要删除前缀
-add_library(demolib_shared SHARED ${DEMOLIB_SRC_FILES}) #添加生成动态库目标test.lib
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+add_library(demolib_shared SHARED ${DEMOLIB_SRC_FILES}) #添加生成动态库目标
 set_target_properties(demolib_shared PROPERTIES OUTPUT_NAME demo)
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 set_target_properties(demolib_shared PROPERTIES PREFIX "") #删除前缀
 elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-set_target_properties(demolib_shared PROPERTIES OUTPUT_NAME demo)
 else()
 endif()
 

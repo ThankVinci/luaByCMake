@@ -97,5 +97,6 @@ endif()
 
 
 ###########添加生成子项目目录################
-add_subdirectory(libdemo ) #添加子项目目录
+add_subdirectory(libdemo )
+add_subdirectory(lua-cjson-general ) 
 ###########添加生成子项目目录################
