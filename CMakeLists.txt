@@ -15,11 +15,16 @@ project ("luaByCMake")
 
 message(STATUS ${CMAKE_C_COMPILER_ID}) #为了方便起见，一进来就打印出编译器
 
+
 #########设置编译器选项和预定义选项##############
 #设置通用的编译器选项、预定义
-add_compile_options(-O2 ) #-Wall开启全部警告
-#add_compile_definitions(NDEBUG )
+#add_compile_options(-O2 ) #-Wall开启全部警告，这里不手动开O2，否则VS的debug的/RTC选项会冲突
+add_compile_definitions(NDEBUG )
 add_compile_definitions(LUA_COMPAT_5_3 )
+
+#查看debug和release模式的选项
+message(STATUS ${CMAKE_C_FLAGS_DEBUG}) 
+message(STATUS ${CMAKE_C_FLAGS_RELEASE}) #GNU、MINGW的RELEASE默认开O3，MSVC的RELEASE默认开O2
 
 #以下分编译器的编译器选项和预定义
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -36,15 +41,8 @@ if(WIN32)
 #MSVC动态库需要暴露接口，所以要添加编译器预定义暴露接口(使用lua源码自带的预定义)
 add_compile_definitions(LUA_BUILD_AS_DLL)
 else()
-add_compile_options(-Wl,-E )
-add_compile_options(-lm -ldl ) #加载数学库、显示加载动态库
-if(APPLE)
-add_compile_options(-lreadline )
-add_compile_definitions(LUA_USE_MACOSX )
-add_compile_definitions(LUA_USE_READLINE )
-else()
 add_compile_definitions(LUA_USE_LINUX )
-endif()
+set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl") #如果是linux的话，编译链接时要链接一些库
 endif()
 #########设置编译器选项和预定义选项##############
 
@@ -83,12 +81,14 @@ endif()
 add_executable(luac ${LUAC_PATH}) #添加生成可执行文件目标luac
 add_executable(lua ${LUA_PATH}) #添加生成可执行文件目标lua
 
-target_link_libraries(luac liblua_static ) #链接可执行文件和静态库和系统库
+
 if(CMAKE_HOST_UNIX)
-target_link_libraries(lua liblua_static ) #链接可执行文件和静态库和系统库
+target_link_libraries(lua liblua_static ${CMAKE_EXE_LINKER_FLAGS})
+target_link_libraries(luac liblua_static ${CMAKE_EXE_LINKER_FLAGS}) #链接可执行文件和静态库和系统库
 elseif(CMAKE_HOST_WIN32)
 #最上面的代码中WIN32加上了LUA_BUILD_AS_DLL编译参数，使得VS项目中具有函数导出接口，所以可以直接进行连接动态库
 target_link_libraries(lua liblua_shared )
+target_link_libraries(luac liblua_static ) #链接可执行文件和静态库和系统库
 else()
 #其他情况下没试过
 endif()

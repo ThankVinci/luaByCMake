@@ -7,11 +7,11 @@
 
 后续考虑添加arm64的编译配置。
 
-注：本项目仅在VS2019上测试通过
+注：本项目仅在VS2019、MinGW、GNU上测试通过
 
 ## 编译注意事项
 
-为了防止污染源代码，项目中存在着build目录，其中有三个目录，GNU、MinGW、MSVC
+为了防止污染源代码，项目中应创建build目录（当然是随意的），其中有三个目录，GNU、MinGW、MSVC
 
 1. 在Linux下，进入build/GNU，输入：
 
@@ -113,14 +113,9 @@
 
 1. 2.28的cmake代码已经弃用，但是我不会删除，可以回过头来看一下当初踩的坑；
 
-2. 本次更新主要是进行了一个规范化的处理，提高一些可读性吧，比如说把win32不需要链接的数学库等，使用cmake的新api去添加到编译器选项或者预处理里面：
+2. 本次更新主要是进行了一个规范化的处理，提高一些可读性吧，使用cmake的新api去添加不同的编译器、平台的编译器选项或者预处理，所以cmake版本至少得是3.12；
 
-   ```cmake
-   add_compile_options(-Wl,-E )
-   add_compile_options(-lm -ldl ) #加载数学库、显示加载动态库
-   ```
-
-3. 然后是为不同的编译器、平台去添加编译器选项和预处理选项，又看了lua源码的makefile文件、cmake的一些api，然后又对比了makefile中mingw、linux的区别（最后还是加了一个MacOSX的一些编译选项。
+3. 然后又去看了lua源码的makefile文件、cmake的一些api，然后又对比了makefile中mingw、linux的区别。
 
 4. 本次更新搭建了一个cmake项目的框架，修改后的CMakeLists文件如下：
 
@@ -142,11 +137,16 @@
    
    message(STATUS ${CMAKE_C_COMPILER_ID}) #为了方便起见，一进来就打印出编译器
    
+   
    #########设置编译器选项和预定义选项##############
    #设置通用的编译器选项、预定义
-   add_compile_options(-O2 ) #-Wall开启全部警告
+   #add_compile_options(-O2 ) #-Wall开启全部警告，这里不手动开O2，否则VS的debug的/RTC选项会冲突
    add_compile_definitions(NDEBUG )
    add_compile_definitions(LUA_COMPAT_5_3 )
+   
+   #查看debug和release模式的选项
+   message(STATUS ${CMAKE_C_FLAGS_DEBUG}) 
+   message(STATUS ${CMAKE_C_FLAGS_RELEASE}) #GNU、MINGW的RELEASE默认开O3，MSVC的RELEASE默认开O2
    
    #以下分编译器的编译器选项和预定义
    if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -163,15 +163,8 @@
    #MSVC动态库需要暴露接口，所以要添加编译器预定义暴露接口(使用lua源码自带的预定义)
    add_compile_definitions(LUA_BUILD_AS_DLL)
    else()
-   add_compile_options(-Wl,-E )
-   add_compile_options(-lm -ldl ) #加载数学库、显示加载动态库
-   if(APPLE)
-   add_compile_options(-lreadline )
-   add_compile_definitions(LUA_USE_MACOSX )
-   add_compile_definitions(LUA_USE_READLINE )
-   else()
    add_compile_definitions(LUA_USE_LINUX )
-   endif()
+   set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl") #如果是linux的话，编译链接时要链接一些库
    endif()
    #########设置编译器选项和预定义选项##############
    
@@ -210,12 +203,14 @@
    add_executable(luac ${LUAC_PATH}) #添加生成可执行文件目标luac
    add_executable(lua ${LUA_PATH}) #添加生成可执行文件目标lua
    
-   target_link_libraries(luac liblua_static ) #链接可执行文件和静态库和系统库
+   
    if(CMAKE_HOST_UNIX)
-   target_link_libraries(lua liblua_static ) #链接可执行文件和静态库和系统库
+   target_link_libraries(lua liblua_static ${CMAKE_EXE_LINKER_FLAGS})
+   target_link_libraries(luac liblua_static ${CMAKE_EXE_LINKER_FLAGS}) #链接可执行文件和静态库和系统库
    elseif(CMAKE_HOST_WIN32)
    #最上面的代码中WIN32加上了LUA_BUILD_AS_DLL编译参数，使得VS项目中具有函数导出接口，所以可以直接进行连接动态库
    target_link_libraries(lua liblua_shared )
+   target_link_libraries(luac liblua_static ) #链接可执行文件和静态库和系统库
    else()
    #其他情况下没试过
    endif()
