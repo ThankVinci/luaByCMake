@@ -85,7 +85,7 @@ install(TARGETS demolib_shared
 ###########生成文件后进行安装##############
 ```
 
-
+**MSVC不走make install，所以上述修改在VS2019中无论是直接打开cmake项目还是使用cmake生成VS项目中都不会起作用**
 
 ## 2023.2.24更新
 
