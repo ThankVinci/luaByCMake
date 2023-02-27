@@ -46,3 +46,12 @@ endif()
 
 target_link_libraries(demolib_shared liblua_shared) #必须链接lua的动态库
 ###########添加生成库目标################
+
+###########生成文件后进行安装##############
+#lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
+install(TARGETS demolib_shared 
+			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+		)
+		#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
+###########生成文件后进行安装##############

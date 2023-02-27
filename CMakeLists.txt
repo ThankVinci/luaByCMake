@@ -13,6 +13,8 @@ endif()
 #设置项目名
 project ("luaByCMake")
 
+set(LUA_VERSION 5.4) #版本号，根据源码的版本进行更改
+
 message(STATUS ${CMAKE_C_COMPILER_ID}) #为了方便起见，一进来就打印出编译器
 
 
@@ -94,6 +96,16 @@ else()
 endif()
 ###########添加生成可执行文件目标################
 
+#########设置安装目录##################
+set(INSTALL_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/installed)
+#########设置安装目录##################
+
+###########生成文件后进行安装##############
+install(TARGETS lua luac liblua_shared 
+			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
+			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
+		)
+###########生成文件后进行安装##############
 
 
 ###########添加生成子项目目录################

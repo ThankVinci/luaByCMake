@@ -81,3 +81,10 @@ endif()
 
 target_link_libraries(cjson_shared liblua_shared) #必须链接lua的动态库
 ###########添加生成库目标################
+
+###########生成文件后进行安装##############
+install(TARGETS cjson_shared 
+			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+		)
+###########生成文件后进行安装##############
