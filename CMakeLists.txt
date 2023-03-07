@@ -1,7 +1,7 @@
 # CMakeList.txt: luaByCMake 的 CMake 项目，在此处包括源代码并定义
 # 项目特定的逻辑。
 #
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required (VERSION 3.12)
 
 #######弃用1#############
 if(WIN32) #如果是MSVC项目的话，请把set(ENV{PATH}..)那一行注释掉，以免干扰MSVC找编译器
@@ -85,7 +85,7 @@ add_executable(lua ${LUA_PATH}) #添加生成可执行文件目标lua
 
 
 if(CMAKE_HOST_UNIX)
-target_link_libraries(lua liblua_static ${CMAKE_EXE_LINKER_FLAGS})
+target_link_libraries(lua liblua_shared ${CMAKE_EXE_LINKER_FLAGS})
 target_link_libraries(luac liblua_static ${CMAKE_EXE_LINKER_FLAGS}) #链接可执行文件和静态库和系统库
 elseif(CMAKE_HOST_WIN32)
 #最上面的代码中WIN32加上了LUA_BUILD_AS_DLL编译参数，使得VS项目中具有函数导出接口，所以可以直接进行连接动态库
@@ -109,6 +109,8 @@ install(TARGETS lua luac liblua_shared
 
 
 ###########添加生成子项目目录################
+add_subdirectory(runLuaScript )
 add_subdirectory(libdemo )
+add_subdirectory(libtest )
 add_subdirectory(lua-cjson-general ) 
 ###########添加生成子项目目录################

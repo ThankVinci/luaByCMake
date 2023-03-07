@@ -49,43 +49,50 @@
 
 ## 2023.2.27更新
 
-本次更新内容是在生成目标文件之后安装到指定目录，主要是每次编译之后要把lua模块复制到我安装lua的路径中很麻烦，并且之前也闹了点乌龙，拿MinGW编译出来的lua去调用MSVC编译出来的库，所以就按照lua规定的那样，模块可以放到安装目录下的lib/lua/${LUA_VERSION}，于是就虚构出一个安装目录来代指实际的安装目录，到时候只要把相关文件复制到实际安装目录中就OK了。
+1. 本次更新内容是在生成目标文件之后安装到指定目录，主要是每次编译之后要把lua模块复制到我安装lua的路径中很麻烦，并且之前也闹了点乌龙，拿MinGW编译出来的lua去调用MSVC编译出来的库，所以就按照lua规定的那样，模块可以放到安装目录下的lib/lua/${LUA_VERSION}，于是就虚构出一个安装目录来代指实际的安装目录，到时候只要把相关文件复制到实际安装目录中就OK了。
 
-在luaByCMake这个项目的根目录下的CMakeLists文件在生成目标之后添加如下代码进行安装：
+   在luaByCMake这个项目的根目录下的CMakeLists文件在生成目标之后添加如下代码进行安装：
+   
+   ```cmake
+   #########设置安装目录##################
+   set(INSTALL_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/installed)
+   #########设置安装目录##################
+   ###########生成文件后进行安装##############
+   install(TARGETS lua luac liblua_shared 
+   		RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
+   		LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
+   	)
+   ###########生成文件后进行安装##############
+   ```
+   
+   为方便起见也在本CMakeLists文件下，新增LUA_VERSION变量，方便子模块安装时使用
+   
+   ```cmake
+   set(LUA_VERSION 5.4) #版本号，根据源码的版本进行更改
+   ```
 
-```cmake
-#########设置安装目录##################
-set(INSTALL_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/installed)
-#########设置安装目录##################
-
-###########生成文件后进行安装##############
-install(TARGETS lua luac liblua_shared 
-			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
-			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
-		)
-###########生成文件后进行安装##############
-```
-
-为方便起见也在本CMakeLists文件下，新增LUA_VERSION变量，方便子模块安装时使用
-
-```cmake
-set(LUA_VERSION 5.4) #版本号，根据源码的版本进行更改
-```
-
-在子模块中，生成库之后添加如下代码进行安装：
-
-```cmake
-###########生成文件后进行安装##############
-#lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
-install(TARGETS demolib_shared 
+   在子模块中，生成库之后添加如下代码进行安装：
+   
+   ```cmake
+   ###########生成文件后进行安装##############
+	#lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
+	install(TARGETS demolib_shared 
 			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
 			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
-		)
-		#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
-###########生成文件后进行安装##############
-```
+   	)
+   	#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
+   ###########生成文件后进行安装##############
+   ```
+   
+   **MSVC不走make install，所以上述修改在VS2019中无论是直接打开cmake项目还是使用cmake生成VS项目中都不会起作用**
+   
+   
+   
+1. 之前把lua源码改成cmake项目时忘了把lua源码中的README文件搬过来，这里面指示了lua的相关协议出处
 
-**MSVC不走make install，所以上述修改在VS2019中无论是直接打开cmake项目还是使用cmake生成VS项目中都不会起作用**
+1. 从lua官网中把license复制过来加入到项目中
+
+   
 
 ## 2023.2.24更新
 
