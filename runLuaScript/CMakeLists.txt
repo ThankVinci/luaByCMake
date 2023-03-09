@@ -1,3 +1,7 @@
+﻿#########用于调试的变量###################
+set(RLUA_EXEC OFF)
+#########用于调试的变量###################
+
 #########设置编译器选项和预定义选项##############
 #设置通用的编译器选项、预定义
 
@@ -20,6 +24,10 @@ else()
 #喵喵喵
 endif()
 endif()
+
+if(RLUA_EXEC)
+add_compile_definitions(RLUA_EXEC )
+endif()
 #########设置编译器选项和预定义选项##############
 
 #########设置目标生成目录##############
@@ -33,16 +41,28 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include )
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src RUNLUA_SRC_FILE)
 #######设置头文件包含目录和编译源文件################
 
-
-###########添加生成库目标################
-add_library(rlua_static STATIC ${RUNLUA_SRC_FILE}) #添加生成静态库目标
-set_target_properties(rlua_static PROPERTIES OUTPUT_NAME rlua)
-
-target_link_libraries(rlua_static liblua_static) #必须链接lua的动态库
+###########添加生成目标################
+if(RLUA_EXEC)
+add_executable(rlua ${RUNLUA_SRC_FILE}) #添加生成可执行文件目标
+target_link_libraries(rlua liblua_shared) #必须链接lua的动态库
+else()
+add_library(rlua_shared SHARED ${RUNLUA_SRC_FILE}) #添加生成动态库目标
+set_target_properties(rlua_shared PROPERTIES OUTPUT_NAME rua)
+target_link_libraries(rlua_shared liblua_shared) #必须链接lua的动态库
+endif()
 ###########添加生成库目标################
 
 ###########生成文件后进行安装##############
-install(TARGETS rlua_static 
+
+if(RLUA_EXEC)
+install(TARGETS rlua 
+			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin
+		)
+else()
+install(TARGETS rlua_shared 
+			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib
+			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib
 			ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib
 		)
+endif()
 ###########生成文件后进行安装##############

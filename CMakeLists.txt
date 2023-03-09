@@ -104,6 +104,7 @@ set(INSTALL_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/installed)
 install(TARGETS lua luac liblua_shared 
 			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
 			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
+			ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib/
 		)
 ###########生成文件后进行安装##############
 
@@ -111,6 +112,6 @@ install(TARGETS lua luac liblua_shared
 ###########添加生成子项目目录################
 add_subdirectory(runLuaScript )
 add_subdirectory(libdemo )
-add_subdirectory(libtest )
+#add_subdirectory(libtest )
 add_subdirectory(lua-cjson-general ) 
 ###########添加生成子项目目录################

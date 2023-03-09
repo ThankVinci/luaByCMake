@@ -432,15 +432,14 @@ static int runLuaScript(lua_State* L) {
 
     //加载字符串作为lua脚本然后进行调用
     luaL_loadstring(L, luaScript);
-    docall(L, 0, 0);
-
+    docall(L, 0, 1);
     //返回值true入栈
     lua_pushboolean(L, 1);  /* signal no errors */
-    return 1;
+    return 2;
 }
 #include "rlua.h"
 
-int run(int argc, char** argv) {
+int run(int argc, char** argv, int* retc, char*** retv) {
     int status, result;
     lua_State* L = luaL_newstate();  /* create state */
     if (L == NULL) {
@@ -452,14 +451,42 @@ int run(int argc, char** argv) {
     lua_pushinteger(L, argc);  /* 1st argument */
     lua_pushlightuserdata(L, argv); /* 2nd argument */
     //调用函数并返回结果
-    status = docall(L, 2, 1);  /* do the call */
+    status = docall(L, 2, 2);  /* do the call */
     result = lua_toboolean(L, -1);  /* get result */
+    lua_pop(L, 1); //把虚拟栈顶的返回值弹出
+
+    //此时栈顶就是lua脚本的返回值，这里我假设我返回的是table类型
+    int is_table = lua_istable(L, -1);
+    if (!is_table || retc == NULL || retv == NULL ) return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;
+
+    //获取处于栈顶的表的大小
+    //int table_length = lua_rawlen(L, -1);
+    //const char* typename = luaL_typename(L, -1);
+
+    lua_pushstring(L, "retc"); //此时栈顶变成了压入的字符串key
+    lua_rawget(L, -2); //执行完这一行，原先栈顶代表key的字符串弹出，从表中获取到的value压到栈顶（整数数据）
+    *retc = (int)lua_tointeger(L, -1);
+    lua_pop(L, 1); //弹出栈顶，此时栈顶变回承载返回值的table
+
+    lua_pushstring(L, "retv"); //此时栈顶变成了我压入的字符串key
+    lua_rawget(L, -2); //执行完这一行，原先栈顶代表key的字符串弹出，从表中获取到的value压到栈顶（表数据）
+    *retv = (char**)malloc(sizeof(char*) * (*retc));
+    if (*retv == NULL) *retc = 0;
+    for (int i = 0; i < *retc;i++) {
+        lua_rawgeti(L, -1, (lua_Integer)i + 1); //从子表中获取数据压到栈顶
+        (*retv)[i] = lua_tostring(L, -1); //获取栈顶数据
+        lua_pop(L, 1); //弹出栈顶，此时栈顶变回返回值中的子表
+    }
+    lua_pop(L, 2); //弹出栈顶的数据以及下面承载返回值的table
+    
+    //int num = lua_gettop(L);
 
     lua_close(L); //关闭虚拟栈
     return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-/*
+#ifdef RLUA_EXEC
+
 //读取整个文件
 static char* readFileAsString(const char* luafilePath) {
     FILE* fpLuaFile = fopen(luafilePath, "r");
@@ -468,7 +495,7 @@ static char* readFileAsString(const char* luafilePath) {
     size_t luafileSize = ftell(fpLuaFile);
     fseek(fpLuaFile, 0, SEEK_SET);
     char* luafileBuff = (char*)malloc(sizeof(char) * (luafileSize+1));
-    if (luafileBuff == NULL) return EXIT_FAILURE;
+    if (luafileBuff == NULL) return NULL;
     luafileSize = fread(luafileBuff, 1, luafileSize, fpLuaFile);
     luafileBuff[luafileSize] = '\0';
     fclose(fpLuaFile);
@@ -477,9 +504,9 @@ static char* readFileAsString(const char* luafilePath) {
 
 
 //模拟demo
-int demo() {
+int main() {
     int argc = 4;
-    char** argv = (const char**)malloc(sizeof(char*)*argc);
+    char** argv = (char**)malloc(sizeof(char*)*argc);
     if (argv == NULL) return EXIT_FAILURE;
     argv[0] = "runScript";
     argv[2] = "arg1";
@@ -490,11 +517,17 @@ int demo() {
     argv[1] = readFileAsString(luafilePath);
     if(argv[1] == NULL) return EXIT_FAILURE;
 
-    int result = run(argc, argv);
+    int retc = 0;
+    char** retv = NULL;
+    int result = run(argc, argv,&retc,&retv);
+    for (int i = 0; i < retc;i++) {
+        printf("%s\n",retv[i]);
+    }
     //运行脚本结束后释放之前动态分配的空间
     free(argv[1]);
     free(argv);
 
     return 0;
 }
-*/
+
+#endif
