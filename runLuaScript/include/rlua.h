@@ -6,4 +6,4 @@
 #define RLUA_DLL_API __declspec(dllexport)
 #endif
 
-RLUA_DLL_API int run(int argc, char** argv, int* retc, char*** retv);
+RLUA_DLL_API int runLua(int argc, char** argv, int* retc, char*** retv);

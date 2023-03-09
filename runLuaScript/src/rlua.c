@@ -439,7 +439,7 @@ static int runLuaScript(lua_State* L) {
 }
 #include "rlua.h"
 
-int run(int argc, char** argv, int* retc, char*** retv) {
+int runLua(int argc, char** argv, int* retc, char*** retv) {
     int status, result;
     lua_State* L = luaL_newstate();  /* create state */
     if (L == NULL) {
@@ -520,7 +520,7 @@ int main() {
 
     int retc = 0;
     char** retv = NULL;
-    int result = run(argc, argv,&retc,&retv);
+    int result = runLua(argc, argv,&retc,&retv);
     for (int i = 0; i < retc;i++) {
         printf("%s\n",retv[i]);
     }
