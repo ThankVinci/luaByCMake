@@ -6,4 +6,12 @@
 #define RLUA_DLL_API __declspec(dllexport)
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 RLUA_DLL_API int runLua(int argc, char** argv, int* retc, char*** retv);
+
+#ifdef __cplusplus
+}
+#endif
