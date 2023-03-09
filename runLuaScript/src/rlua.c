@@ -504,6 +504,7 @@ static char* readFileAsString(const char* luafilePath) {
 
 
 //模拟demo
+//不要无脑运行这个主函数，要注意传入的参数和个数是否对应，读取的lua文件要能够找得到
 int main() {
     int argc = 4;
     char** argv = (char**)malloc(sizeof(char*)*argc);
