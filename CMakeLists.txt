@@ -59,10 +59,10 @@ target_link_libraries(lua liblua_shared )
 
 #9.生成文件后进行安装的安装目录##############
 install(TARGETS lua luac liblua_shared liblua_static 
-			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
-			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
-			ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib/
-		)
+	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
+	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
+	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib/
+)
 #############################################
 
 #############################################
@@ -111,15 +111,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 		#喵喵喵
 	endif()
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux") #linux还有个readline的构建
-	add_compile_definitions(LUA_USE_LINUX LUA_USE_READLINE )
-	set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl -lreadline") #如果是linux的话，编译链接时要链接一些库，或者传递一些参数给链接器
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux") #linux还有个readline的构建，但是不知道咋整
+	add_compile_definitions(LUA_USE_LINUX ) #LUA_USE_READLINE	
+	set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl") #-lreadline 
+	target_link_libraries(luac ${CMAKE_EXE_LINKER_FLAGS} )
+	target_link_libraries(lua ${CMAKE_EXE_LINKER_FLAGS} )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	add_compile_definitions(LUA_USE_MACOSX LUA_USE_READLINE )
 	set(CMAKE_EXE_LINKER_FLAGS "-lreadline")
 endif()
 #############################################
-
 
 #12.添加生成子项目目录#######################
 add_subdirectory(runLuaScript )

@@ -1,57 +1,54 @@
-#########设置编译器选项和预定义选项##############
-#设置通用的编译器选项、预定义
+#1.设置模块名称##########################
+#这里提供了懒人一键式构建，一般来说只需要修改模块名称即可，但还是要发挥一下主观能动性
+#需要修改的地方可能也就目标链接和预定义之类的
+set(MODULE_NAME_WITH_SHARED "demolib_shared")
+set(MODULE_NAME "demo")
+#############################################
 
-#以下分编译器的编译器选项和预定义
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-##喵喵喵
-elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-##喵喵喵
-else()
-##其他情况
-endif()
-#以下分平台的编译器选项和预定义
-if(WIN32) 
-#MSVC动态库需要暴露接口，所以要添加编译器预定义暴露接口(使用lua源码自带的预定义)
-add_compile_definitions(LUA_LIB )
-else()
-if(APPLE)
-#喵喵喵
-else()
-#喵喵喵
-endif()
-endif()
-#########设置编译器选项和预定义选项##############
-
-#########设置目标生成目录##############
+#2.设置目标生成目录##########################
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin) #设置可执行文件输出目录（Windows下dll会产生在这个目录下）
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置动态库输出目录
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置静态库输出目录
-#########设置目标生成目录##############
+#############################################
 
-#######设置头文件包含目录和编译源文件################
+#3.设置包含目录、库目录和参加编译源文件######
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include )
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src DEMOLIB_SRC_FILES)
-#######设置头文件包含目录和编译源文件################
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src MODULE_SRC_FILES)
+#############################################
 
-
-###########添加生成库目标################
-#注：由于lua库名称的限制以及GNU编译器编译库文件名的特性，所以要删除前缀
-add_library(demolib_shared SHARED ${DEMOLIB_SRC_FILES}) #添加生成动态库目标
-set_target_properties(demolib_shared PROPERTIES OUTPUT_NAME demo)
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-set_target_properties(demolib_shared PROPERTIES PREFIX "") #删除前缀
-elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+#4.添加生成库目标############################
+#注：由于lua对模块名称的限制以及一些编译器编译库文件名的会加上lib的缘故，所以要删除前缀
+add_library(${MODULE_NAME_WITH_SHARED} SHARED ${MODULE_SRC_FILES}) #添加生成动态库目标
+set_target_properties(${MODULE_NAME_WITH_SHARED} PROPERTIES OUTPUT_NAME ${MODULE_NAME})
+if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 else()
+	set_target_properties(${MODULE_NAME_WITH_SHARED} PROPERTIES PREFIX "") #除了MSVC外的编译器都删除前缀
 endif()
+#############################################
 
-target_link_libraries(demolib_shared liblua_shared) #必须链接lua的动态库
-###########添加生成库目标################
-
-###########生成文件后进行安装##############
+#5.生成文件后进行安装的安装目录##############
 #lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
-install(TARGETS demolib_shared 
-			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
-			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
-		)
-		#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
-###########生成文件后进行安装##############
+install(TARGETS ${MODULE_NAME_WITH_SHARED} 
+	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+)#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
+#############################################
+
+#6.目标链接设置##############################
+target_link_libraries(${MODULE_NAME_WITH_SHARED} liblua_shared) #必须链接lua的动态库
+#############################################
+
+#############################################
+#		以下的内容就属于需要经常改的了		#
+#		（如果增加编译平台的话）			#
+#############################################
+
+#7.编译器、预定义、链接选项、生成事件########
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	add_compile_definitions(LUA_LIB )
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+endif()
+#############################################

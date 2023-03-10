@@ -47,6 +47,32 @@
 
 # 折腾之路
 
+## 2023.3.11更新
+
+我宣布这是我优化这个项目以来最爽的一次，学到很多东西。
+
+今天把电脑升级到32G内存，于是装了个MacOS的虚拟机，想到luaByCMake项目只配置了Linux和Windows，所以又增加了Darwin的编译设置，不更新不打紧，一更新我的强迫症就犯了，所以此次更新除了增加Darwin以外，整个CMakeLists文件大换血：
+
+1. 规范化luaByCmake项目中的构建，根据不同生成设定去设置名称和序号，使得整个CMakeLists文件看上去一目了然，可能会频繁更新修改的内容就放到最下面；
+
+2. 之前写的时候是按编译器类型去分，但是现在发现一个问题，我只有在Windows下才会同时用到两种编译器（MinGW和MSVC），而用Linux时只会用到GNU，至于MacOS用的频次更少，所以我应该以操作系统来进行区分，这样哪怕该操作系统下有什么其他的编译器，再做区分就好了；
+
+3. 此次更新除了新增Darwin以外还再看了一遍lua的makefile，关于我之前不懂的地方我没敢加上去的东西：
+
+   ```makefile
+   mingw:
+   $(MAKE) "LUA_A=lua54.dll" "LUA_T=lua.exe" \
+   "AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
+   "SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
+   $(MAKE) "LUAC_T=luac.exe" luac.exe
+   ```
+
+   `strip --strip-unneeded`，就是删除符号表中不需要的符号，`SYSLDFLAGS=-s`则是传递参数给链接器ld，让其删除所有符号，一开始我是不知道这两个东西的区别的，就在想为什么一个是执行strip另一个是传递给链接器，后来我试了好几次都报错，问了chatgpt才知道不能直接把--strip-unneeded传给链接器，因为这个是strip的运行参数。所以最后的解决方案是在CMakeLists中调用自定义命令去执行strip，把生成的lua54.dll中不需要的符号进行删除；同理也删除lua.exe的所有符号。
+
+   最让我觉得惊奇的是，我故意把生成的模块的符号表全删除了，但是仍然能够完成require操作，同时模块的体积确实变小了。
+
+4. 此次更新还把原先的luaC包模块的模版大改了，现在的模版模块只需要复制一份，然后简单改一下处于文件头部分的生成目标名就可以了。
+
 ## 2023.3.8~3.9更新
 
 1. 本次更新添加了一个测试api的test子模块，但是我没有搞清楚这个模块的定位，所以没有添加进来。
@@ -327,3 +353,21 @@ dumpbin /exports dllPath
 我电脑中Path中的lua是使用MinGW编译的，但是我为了测试cmake配置跨平台项目，于是用vs打开cmake项目进行编译，然后把生成的lua模块放到我电脑Path的lua的路径中，结果一直找不到模块，但是相同的项目使用MinGW编译出的模块却可以，一开始我是一直在想是不是导出接口的问题，找了好几个小时，最后我才反应过来可能是编译器不同的原因。
 
 也许应该有一个通用的什么标识可以让MSVC和MinGW编译的库可以互认，但是个人感觉没这个必要。
+
+## 3.链接器选项相关
+
+1. 首先是CMAKE_EXE_LINKER_FLAGS这个变量吧，添加到这个变量中的编译选项会传递给链接器，在Windows和MacOS下，这个变量就有作用，但是在linux下这个变量是无效的，就跟一个普通变量一样，最终我还是手动设置target_link_libraries，把linux需要的链接加上；
+
+2. 后知后觉，lua原项目的makefile中的`SYSCFLAGS`之类的参数是预定义宏，`SYSLIBS`之类的参数可以直接传递给链接器，而`SYSLDFLAGS`之类的参数也是要传递给链接器的，但是传递的方式比较特别
+
+   ```cmake
+   add_compile_definitions(NDEBUG ) #添加一个宏
+   set(CMAKE_EXE_LINKER_FLAGS "-lm -ldl") #传递`SYSLIBS`
+   set(CMAKE_EXE_LINKER_FLAGS "-Wl,-E") #传递`SYSLDFLAGS`：E
+   ```
+
+3. 关于strip，因为看了MinGW的配置中使用了`strip --strip-unneeded`，但是下面却使用SYSLDFLAGS传递了`-s`，这让我不解，最后才知道，虽然strip也有-s，但是和链接器的-s却不是同一个-s，只是含义一样，所以`--strip-unneeded`链接器是不认的，只能手动设置，幸好是cmake中可以执行自定义的命令
+
+## 4.关于符号
+
+1. MinGW编译的lua模块不管有没有用暴露接口的宏，模块中的接口都是能够找到的，让我比较懵逼的是，如果使用strip删除了模块了所有符号，使用nm显示没有符号的情况下，仍然可以require该模块成功。这属实是震惊到我了。
