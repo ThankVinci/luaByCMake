@@ -52,7 +52,7 @@ set(MODULE_SRC_FILES ${SRC_DIR}/lua_cjson.c ${SRC_DIR}/strbuf.c ${FPCONV_SOURCES
 
 #4.添加生成库目标############################
 #注：由于lua对模块名称的限制以及一些编译器编译库文件名的会加上lib的缘故，所以要删除前缀
-add_library(${MODULE_NAME_WITH_SHARED} SHARED ${MODULE_SRC_FILES}) #添加生成动态库目标
+add_library(${MODULE_NAME_WITH_SHARED} MODULE ${MODULE_SRC_FILES}) #添加生成动态库目标
 set_target_properties(${MODULE_NAME_WITH_SHARED} PROPERTIES OUTPUT_NAME ${MODULE_NAME})
 if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 else()
@@ -63,7 +63,7 @@ endif()
 #5.生成文件后进行安装的安装目录##############
 #lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
 install(TARGETS ${MODULE_NAME_WITH_SHARED} 
-	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+	#RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
 	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
 )#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
 #############################################

@@ -125,6 +125,5 @@ endif()
 #12.添加生成子项目目录#######################
 add_subdirectory(runLuaScript )
 add_subdirectory(libdemo )
-#add_subdirectory(libtest )
 add_subdirectory(lua-cjson-general ) 
 #############################################

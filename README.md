@@ -73,9 +73,17 @@
 
 4. 此次更新还把原先的luaC包模块的模版大改了，现在的模版模块只需要复制一份，然后简单改一下处于文件头部分的生成目标名就可以了。
 
+
+## 2023.3.11第二次更新
+
+本次更新是小问题，小细节
+
+1. MacOS下编译lua模块产生了dylib导致无法加载，做了一点修改使得编译产生so库，详情见总结的坑（5.关于动态库）
+1. 也是因为解决1的问题，使得Windows编译出来的lua模块不再是RUNTIME而是LIBRARY了。
+
 ## 2023.3.8~3.9更新
 
-1. 本次更新添加了一个测试api的test子模块，但是我没有搞清楚这个模块的定位，所以没有添加进来。
+1. ~~本次更新添加了一个测试api的test子模块，但是我没有搞清楚这个模块的定位，所以没有添加进来。~~
 
 2. 本次更新添加了一个名为runLuaScript的子项目，该项目将会被编译成库（库名称为rua，别问我为什么叫rua），然后结合引导库文件和头文件实现链接。
 
@@ -371,3 +379,15 @@ dumpbin /exports dllPath
 ## 4.关于符号
 
 1. MinGW编译的lua模块不管有没有用暴露接口的宏，模块中的接口都是能够找到的，让我比较懵逼的是，如果使用strip删除了模块了所有符号，使用nm显示没有符号的情况下，仍然可以require该模块成功。这属实是震惊到我了。
+
+## 5.关于动态库
+
+1. 有一个小问题就是动态库，在Windows下为dll、在linux下为so、但是在MacOS下编译出来却是dylib，属实给我整不会了，打开搜索引擎找，你看苹果这么大一公司，总不能lua都跑不了吧，可能是我搜的姿势不对，反正看半天找不出个所以然，最后是什么呢，我灵机一动，想到不久之前（其实很久了），我还在想add_library里面`SHARED`和`MODULE`的区别，但是我没有动手去查啊，就这么放着不管（敲头）
+
+   ```txt
+   STATIC, SHARED, or MODULE may be given to specify the type of library to be created. STATIC libraries are archives of object files for use when linking other targets. SHARED libraries are linked dynamically and loaded at runtime. MODULE libraries are plugins that are not linked into other targets but may be loaded dynamically at runtime using dlopen-like functionality. If no type is given explicitly the type is STATIC or SHARED based on whether the current value of the variable BUILD_SHARED_LIBS is ON. For SHARED and MODULE libraries the POSITION_INDEPENDENT_CODE target property is set to ON automatically. A SHARED library may be marked with the FRAMEWORK target property to create an macOS Framework.
+   ```
+
+   cmake官方文档是这么写的，`SHARED`库动态链接并在运行时加载。 `MODULE`库是没有链接到其他目标但可以在运行时使用类似 dlopen 的功能动态加载的插件。也就是说，编译这些模块，其实都不是运行时加载的，都是动态添加的插件，因此，所有的lua模块生成库都应该改成`module`。
+
+   一个小细节吧，自从把生成的模块设置成MODULE之后，Windows下模块的生成目录就是library了。
