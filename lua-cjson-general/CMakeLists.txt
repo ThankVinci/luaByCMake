@@ -83,6 +83,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	add_compile_definitions(LUA_LIB )
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 		add_compile_options(-pedantic -fpic) #GNU支持的编译器选项
+		add_custom_command(TARGET ${MODULE_NAME_WITH_SHARED} #直接把符号都删了
+			POST_BUILD #在目标生成后再执行
+			COMMAND strip "-s" "$<TARGET_FILE:${MODULE_NAME_WITH_SHARED}>") 
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	add_compile_options(-pedantic -fpic) #GNU支持的编译器选项
