@@ -230,7 +230,9 @@
 
 #if !defined(LUA_CPATH_DEFAULT)
 #define LUA_CPATH_DEFAULT \
-		LUA_CDIR"?.so;" LUA_CDIR"loadall.so;" "./?.so"
+		LUA_CDIR"?.so;" \
+		LUA_CDIR"../lib/lua/" LUA_VDIR "/?.so;" \
+		LUA_CDIR"loadall.so;" "./?.so"
 #endif
 
 #endif			/* } */
