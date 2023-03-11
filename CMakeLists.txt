@@ -81,7 +81,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU") #makefile中mingw生成的库名就直接叫原本的名字，所以这里进行删除
 		set_target_properties(liblua_static PROPERTIES PREFIX "") #删除前缀
 		set_target_properties(liblua_shared PROPERTIES PREFIX "") 
-		set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'$$ORIGIN/../lib'")
+		#set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'$$ORIGIN/../lib'")
 		#SET(CMAKE_SKIP_RPATH FALSE) 
 		#SET(CMAKE_SKIP_BUILD_RPATH FALSE) 
 		#SET(CMAKE_SKIP_INSTALL_RPATH FALSE) 
@@ -128,7 +128,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux") #linux还有个readline的构建，但是不知道咋整
 	add_compile_definitions(LUA_USE_LINUX ) #LUA_USE_READLINE	
-	set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl " ${CMAKE_EXE_LINKER_FLAGS} ) #-lreadline 
+	set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl -Wl,-rpath,'$$ORIGIN/../lib'") #-lreadline 
 	message(STATUS ${CMAKE_EXE_LINKER_FLAGS} )
 	target_link_libraries(luac ${CMAKE_EXE_LINKER_FLAGS} )
 	target_link_libraries(lua ${CMAKE_EXE_LINKER_FLAGS} )
