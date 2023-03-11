@@ -1,68 +1,63 @@
-﻿#########用于调试的变量###################
-set(RLUA_EXEC ON)
-#########用于调试的变量###################
+﻿#1.调试模块使用变量、模块名##########################
+set(RLUA_EXEC_MAIN ON) #调试用
 
-#########设置编译器选项和预定义选项##############
-#设置通用的编译器选项、预定义
+set(RLUA_SHARED "rua_shared")
+set(RLUA_EXEC "rua_exec")
+set(RLUA "rua")
 
-#以下分编译器的编译器选项和预定义
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-##喵喵喵
-elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-##喵喵喵
+if(RLUA_EXEC_MAIN)
+	add_compile_definitions(RLUA_EXEC_MAIN )
+	set(RLUA_TARGET ${RLUA_EXEC})
 else()
-##其他情况
+	set(RLUA_TARGET ${RLUA_SHARED})
 endif()
-#以下分平台的编译器选项和预定义
-if(WIN32) 
-#MSVC动态库需要暴露接口，所以要添加编译器预定义暴露接口(使用lua源码自带的预定义)
-add_compile_definitions(LUA_LIB )
-else()
-if(APPLE)
-#喵喵喵
-else()
-#喵喵喵
-endif()
-endif()
+############################################
 
-if(RLUA_EXEC)
-add_compile_definitions(RLUA_EXEC )
-endif()
-#########设置编译器选项和预定义选项##############
-
-#########设置目标生成目录##############
+#2.设置目标生成目录##########################
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin) #设置可执行文件输出目录（Windows下dll会产生在这个目录下）
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置动态库输出目录
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置静态库输出目录
-#########设置目标生成目录##############
+#############################################
 
-#######设置头文件包含目录和编译源文件################
+#3.设置包含目录、库目录和参加编译源文件######
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include )
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src RUNLUA_SRC_FILE)
-#######设置头文件包含目录和编译源文件################
+#############################################
 
-###########添加生成目标################
-if(RLUA_EXEC)
-add_executable(rlua ${RUNLUA_SRC_FILE}) #添加生成可执行文件目标
-target_link_libraries(rlua liblua_shared) #必须链接lua的动态库
+#4.添加生成目标和链接库######################
+if(RLUA_EXEC_MAIN)
+	add_executable(${RLUA_EXEC} ${RUNLUA_SRC_FILE}) #添加生成可执行文件目标
 else()
-add_library(rlua_shared SHARED ${RUNLUA_SRC_FILE}) #添加生成动态库目标
-set_target_properties(rlua_shared PROPERTIES OUTPUT_NAME rua)
-target_link_libraries(rlua_shared liblua_shared) #必须链接lua的动态库
+	add_library(${RLUA_SHARED} SHARED ${RUNLUA_SRC_FILE}) #添加生成动态库目标
 endif()
-###########添加生成库目标################
+set_target_properties(${RLUA_TARGET} PROPERTIES OUTPUT_NAME ${RLUA})
+target_link_libraries(${RLUA_TARGET} ${LIBLUA_SHARED}) #必须链接lua的动态库
 
-###########生成文件后进行安装##############
+#############################################
+message(STATUS ${LIBLUA_SHARED})
 
-if(RLUA_EXEC)
-install(TARGETS rlua 
-			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin
-		)
-else()
-install(TARGETS rlua_shared 
-			RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib
-			LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib
-			ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib
-		)
+#5.生成文件后进行安装########################
+install(TARGETS ${RLUA_TARGET} 
+	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin
+	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib
+	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib
+)
+#############################################
+
+#############################################
+#		以下的内容就属于需要经常改的了		#
+#		（如果增加编译平台的话）			#
+#############################################
+
+#6.编译器、预定义、链接选项、生成事件########
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	add_compile_definitions(LUA_LIB )
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		#add_custom_command(TARGET ${MODULE_NAME_WITH_MODULE} #直接把符号都删了
+			#POST_BUILD #在目标生成后再执行
+			#COMMAND strip "-s" "$<TARGET_FILE:${MODULE_NAME_WITH_MODULE}>") 
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
-###########生成文件后进行安装##############
+#############################################

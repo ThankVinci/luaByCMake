@@ -485,7 +485,7 @@ int runLua(int argc, char** argv, int* retc, char*** retv) {
     return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-#ifdef RLUA_EXEC
+#ifdef RLUA_EXEC_MAIN
 
 //读取整个文件
 static char* readFileAsString(const char* luafilePath) {

@@ -1,6 +1,3 @@
-# CMakeList.txt: luaByCMake 的 CMake 项目，在此处包括源代码并定义
-# 项目特定的逻辑。
-
 cmake_minimum_required (VERSION 3.12)
 
 #######弃用1#############
@@ -10,9 +7,17 @@ cmake_minimum_required (VERSION 3.12)
 #endif()
 #######弃用1结束#########
 
-#1.设置项目名和版本信息######################
+#1.设置项目名、版本信息、项目相关变量########
 project ("luaByCMake")
-set(LUA_VERSION 5.4) #版本号，根据源码的版本进行更改
+set(LUA_VERSION 5.4) #lua版本号，根据源码的版本进行更改
+set(LBC_VERSION 1.0) #luaByCMake版本号
+
+#项目生成目标的变量
+set(LIBLUA_STATIC liblua_static)
+set(LIBLUA_SHARED liblua_shared)
+set(LUAC_EXEC luac_exec)
+set(LUA_EXEC lua_exec)
+set(LUA_NAME lua)
 #############################################
 
 #2.信息打印处################################
@@ -43,22 +48,22 @@ list(REMOVE_ITEM LIB_SRC_FILES  ${LUA_PATH} ${LUAC_PATH}) #从源文件中剔除
 #############################################
 
 #6.添加生成库目标############################
-add_library(liblua_static STATIC ${LIB_SRC_FILES}) #添加生成静态库目标liblua_static
-add_library(liblua_shared SHARED ${LIB_SRC_FILES}) #添加生成动态库目标liblua_shared
+add_library(${LIBLUA_STATIC} STATIC ${LIB_SRC_FILES}) #添加生成静态库目标liblua_static
+add_library(${LIBLUA_SHARED} SHARED ${LIB_SRC_FILES}) #添加生成动态库目标liblua_shared
 #############################################
 
 #7.添加生成可执行文件目标####################
-add_executable(luac_exec ${LUAC_PATH}) #添加生成可执行文件目标luac_exec
-add_executable(lua_exec ${LUA_PATH}) #添加生成可执行文件目标lua_exec
+add_executable(${LUAC_EXEC} ${LUAC_PATH}) #添加生成可执行文件目标luac_exec
+add_executable(${LUA_EXEC} ${LUA_PATH}) #添加生成可执行文件目标lua_exec
 ###########################################
 
 #8.生成可执行文件链接设置###################
-target_link_libraries(luac_exec liblua_static ) #luac链接静态库
-target_link_libraries(lua_exec liblua_shared ) #lua链接动态库
+target_link_libraries(${LUAC_EXEC} ${LIBLUA_STATIC} ) #luac链接静态库
+target_link_libraries(${LUA_EXEC} ${LIBLUA_SHARED} ) #lua链接动态库
 #############################################
 
 #9.生成文件后进行安装的安装目录##############
-install(TARGETS lua_exec luac_exec liblua_shared liblua_static 
+install(TARGETS ${LUA_EXEC} ${LUAC_EXEC} ${LIBLUA_SHARED} ${LIBLUA_STATIC} 
 	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
 	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
 	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib/
@@ -72,32 +77,32 @@ install(TARGETS lua_exec luac_exec liblua_shared liblua_static
 
 #10.生成目标属性设置###########################
 
-set_target_properties(luac_exec PROPERTIES OUTPUT_NAME luac)
-set_target_properties(lua_exec PROPERTIES OUTPUT_NAME lua)
+set_target_properties(${LUAC_EXEC} PROPERTIES OUTPUT_NAME ${LUA_NAME}c)
+set_target_properties(${LUA_EXEC} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME liblua) #MSVC编译产生的库名就是原来的库名
-	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua54)
+	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME lib${LUA_NAME}) #MSVC编译产生的库名就是原来的库名
+	set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME}54)
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU") #makefile中mingw生成的库名就直接叫原本的名字，所以这里进行删除
-		set_target_properties(liblua_static PROPERTIES PREFIX "") #删除前缀
-		set_target_properties(liblua_shared PROPERTIES PREFIX "")
+		set_target_properties(${LIBLUA_STATIC} PROPERTIES PREFIX "") #删除前缀
+		set_target_properties(${LIBLUA_SHARED} PROPERTIES PREFIX "")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #GNU编译产生的库名前面会自己加上lib
-	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #GNU编译产生的库名前面会自己加上lib
+	set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 	#设置runpath
 	set(CMAKE_SKIP_BUILD_RPATH FALSE)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 	set(CMAKE_INSTALL_RPATH "./:$ORIGIN/../../")
-	set_target_properties(lua_exec PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
+	set_target_properties(${LUA_EXEC} PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #AppleClang编译产生的库名前面会自己加上lib
-	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #AppleClang编译产生的库名前面会自己加上lib
+	set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 	set(CMAKE_MACOSX_RPATH ON)
 	#set(CMAKE_INSTALL_RPATH "./:@rpath/../../")
 	#set_target_properties(lua PROPERTIES INSTALL_RPATH "@executable_path/../lib")
-	add_custom_command(TARGET lua_exec POST_BUILD 
-	COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:lua_exec>)
+	add_custom_command(TARGET ${LUA_EXEC} POST_BUILD 
+	COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:${LUA_EXEC}>)
 	#install_name_tool -add_rpath "./;@rpath/../lib/"
 endif()
 #############################################
@@ -117,12 +122,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 		#为什么只删除mingw生成的lua的符号表，不删除别的平台的符号表（Darwin我试了删除会报错，但是Linux可以删除）
 		#set(CMAKE_EXE_LINKER_FLAGS "-Wl,-s") 
 		#set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--strip-unneeded") #设置无效，编译报错
-		add_custom_command(TARGET liblua_shared #makefile中mingw生成的共享库会删除不需要的符号
+		add_custom_command(TARGET ${LIBLUA_SHARED} #makefile中mingw生成的共享库会删除不需要的符号
 			POST_BUILD #在目标生成后再执行
-			COMMAND strip "--strip-unneeded" "$<TARGET_FILE:liblua_shared>") 
-		add_custom_command(TARGET lua_exec #makefile中mingw生成的lua会删除所有符号
+			COMMAND strip "--strip-unneeded" "$<TARGET_FILE:${LIBLUA_SHARED}>") 
+		add_custom_command(TARGET ${LUA_EXEC} #makefile中mingw生成的lua会删除所有符号
 			POST_BUILD #在目标生成后再执行
-			COMMAND strip "-s" "$<TARGET_FILE:lua_exec>") 
+			COMMAND strip "-s" "$<TARGET_FILE:${LUA_EXEC}>") 
 	elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 		#喵喵喵
 	endif()
@@ -130,8 +135,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux") #linux还有个readline的构建，�
 	add_compile_definitions(LUA_USE_LINUX ) #LUA_USE_READLINE	
 	set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl" ${CMAKE_EXE_LINKER_FLAGS} ) #-lreadline 
 	message(STATUS ${CMAKE_EXE_LINKER_FLAGS} )
-	target_link_libraries(luac_exec ${CMAKE_EXE_LINKER_FLAGS} )
-	target_link_libraries(lua_exec ${CMAKE_EXE_LINKER_FLAGS} )
+	target_link_libraries(${LUAC_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
+	target_link_libraries(${LUA_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	add_compile_definitions(LUA_USE_MACOSX LUA_USE_READLINE )
 	set(CMAKE_EXE_LINKER_FLAGS "-lreadline")

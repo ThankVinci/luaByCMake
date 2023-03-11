@@ -26,7 +26,7 @@ else()
 endif()
 #############################################
 
-#5.生成文件后进行安装的安装目录##############
+#5.生成文件后进行安装########################
 #lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
 install(TARGETS ${MODULE_NAME_WITH_MODULE} 
 	#RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
@@ -35,7 +35,7 @@ install(TARGETS ${MODULE_NAME_WITH_MODULE}
 #############################################
 
 #6.目标链接设置##############################
-target_link_libraries(${MODULE_NAME_WITH_MODULE} liblua_shared)
+target_link_libraries(${MODULE_NAME_WITH_MODULE} ${LIBLUA_SHARED})
 #############################################
 
 #############################################

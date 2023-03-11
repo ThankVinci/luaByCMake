@@ -69,7 +69,7 @@ install(TARGETS ${MODULE_NAME_WITH_MODULE}
 #############################################
 
 #6.目标链接设置##############################
-target_link_libraries(${MODULE_NAME_WITH_MODULE} liblua_shared)
+target_link_libraries(${MODULE_NAME_WITH_MODULE} ${LIBLUA_SHARED})
 #############################################
 #############################################
 #		以下的内容就属于需要经常改的了		#
