@@ -1,0 +1,64 @@
+#1.运行库使用变量、库名#################
+set(LUARNR_SHARED "luarnr_shared")
+set(DEMO_EXEC "demo_exec")
+set(LUARNR "luarnr")
+set(DEMO "demo")
+#############################################
+
+#2.设置目标生成目录##########################
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin) #设置可执行文件输出目录（Windows下dll会产生在这个目录下）
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置动态库输出目录
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置静态库输出目录
+#############################################
+
+#3.设置包含目录、库目录和参加编译源文件######
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
+					${CMAKE_CURRENT_SOURCE_DIR}/include/io   
+					${CMAKE_CURRENT_SOURCE_DIR}/include/luarnr ) #设置头文件所在目录
+
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/io IO_SRC )
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/luarnr LUARNR_CLASS_SRC )
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src DEMO_SRC )
+#############################################
+
+#4.添加生成目标##############################
+add_library(${LUARNR_SHARED} SHARED ${LUARNR_CLASS_SRC})
+set_target_properties(${LUARNR_SHARED} PROPERTIES OUTPUT_NAME ${LUARNR})
+
+add_executable(${DEMO_EXEC} ${DEMO_SRC} ${IO_SRC} )
+set_target_properties(${DEMO_EXEC} PROPERTIES OUTPUT_NAME ${DEMO})
+#############################################
+
+#5.链接库####################################
+target_link_libraries(${LUARNR_SHARED} ${RLUA_STATIC}) #链接rlua的静态库
+target_link_libraries(${DEMO_EXEC} ${LUARNR_SHARED}) #链接LUARNR_SHARED
+#############################################
+
+#6.编译器、预定义、链接选项、生成事件########
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	add_compile_definitions(LUARNR_API )
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	if(RLUA_EXEC_MAIN)
+		target_link_libraries(${DEMO_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+endif()
+#############################################
+
+#7.生成文件后进行安装########################
+install(TARGETS ${DEMO_EXEC} ${LUARNR_SHARED}
+	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin
+	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib
+	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib
+)
+#############################################
+
+#8.安装脚本和json############################
+install(
+	FILES 
+	${CMAKE_CURRENT_SOURCE_DIR}/scripts/main.lua 
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/entry.json 
+	DESTINATION ${INSTALL_DIRECTORY}/bin )
+#############################################

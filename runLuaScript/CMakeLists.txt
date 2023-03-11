@@ -1,7 +1,8 @@
 ﻿#1.调试模块使用变量、模块名#################
-set(RLUA_EXEC_MAIN OFF) #调试用
+set(RLUA_EXEC_MAIN OFF) #现在这个变量永久关闭
 
-set(RLUA_SHARED "rua_shared")
+set(RLUA_STATIC "rua_static")
+#set(RLUA_SHARED "rua_shared")
 set(RLUA_EXEC "rua_exec")
 set(RLUA "rua")
 
@@ -9,7 +10,7 @@ if(RLUA_EXEC_MAIN)
 	add_compile_definitions(RLUA_EXEC_MAIN )
 	set(RLUA_TARGET ${RLUA_EXEC})
 else()
-	set(RLUA_TARGET ${RLUA_SHARED})
+	set(RLUA_TARGET ${RLUA_STATIC})
 endif()
 #############################################
 
@@ -28,13 +29,12 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src RUNLUA_SRC_FILE)
 if(RLUA_EXEC_MAIN)
 	add_executable(${RLUA_EXEC} ${RUNLUA_SRC_FILE}) #添加生成可执行文件目标
 else()
-	add_library(${RLUA_SHARED} SHARED ${RUNLUA_SRC_FILE}) #添加生成动态库目标
+	add_library(${RLUA_STATIC} STATIC ${RUNLUA_SRC_FILE}) #添加生成静态库目标
 endif()
 set_target_properties(${RLUA_TARGET} PROPERTIES OUTPUT_NAME ${RLUA})
-target_link_libraries(${RLUA_TARGET} ${LIBLUA_SHARED}) #必须链接lua的动态库
-
+target_link_libraries(${RLUA_TARGET} ${LIBLUA_STATIC})
 #############################################
-message(STATUS ${LIBLUA_SHARED})
+#message(STATUS ${RLUA_STATIC})
 
 #5.生成文件后进行安装########################
 install(TARGETS ${RLUA_TARGET} 
@@ -66,6 +66,7 @@ endif()
 #############################################
 
 #7.设置RunPath###############################
+#[[
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 	endif()
@@ -85,4 +86,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 		"@executable_path/lib/"
 	)
 endif()
+]]
+#############################################
+
+#8.添加生成子项目目录#######################
+add_subdirectory(luaRunner )
 #############################################
