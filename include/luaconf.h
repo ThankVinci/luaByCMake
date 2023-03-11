@@ -217,13 +217,6 @@
 		
 #endif
 
-#define LUA_CPATH_DEFAULT \
-		LUA_CDIR"?.so;" \
-		LUA_CDIR"loadall.so;" \
-		"../lib/lua/" LUA_VDIR "/?.so;" \
-		"./luamodules/lib/" LUA_VDIR "/?.so;" \ "./?.so"
-#endif
-
 #else			/* }{ */
 
 #define LUA_ROOT	"/usr/local/"
@@ -238,12 +231,12 @@
 #endif
 
 #if !defined(LUA_CPATH_DEFAULT)
+
 #define LUA_CPATH_DEFAULT \
 		LUA_CDIR"?.so;" \
 		LUA_CDIR"loadall.so;" \
-		"../lib/lua/" LUA_VDIR "/?.so;" \ 
-		"./luamodules/lib/" LUA_VDIR "/?.so;" \ 
-		"./?.so"
+		"../lib/lua/" LUA_VDIR "/?.so;" \
+		"./luamodules/lib/" LUA_VDIR "/?.so;" \ "./?.so"
 #endif
 
 #endif			/* } */
