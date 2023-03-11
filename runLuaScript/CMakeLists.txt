@@ -60,14 +60,29 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	if(RLUA_EXEC_MAIN)
 		target_link_libraries(${RLUA_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
-		#设置runpath
-		set_property(
-			TARGET ${LUA_EXEC}
-			PROPERTY INSTALL_RPATH
-			"$ORIGIN/"
-			"$ORIGIN/../lib/"
-		)
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+endif()
+#############################################
+
+#7.设置RunPath###############################
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU") #makefile中mingw生成的库名就直接叫原本的名字，所以这里进行删除
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	set_property(
+		TARGET ${RLUA_TARGET}
+		PROPERTY INSTALL_RPATH
+		"$ORIGIN/"
+		"$ORIGIN/../lib/"
+	)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+	#set(CMAKE_MACOSX_RPATH ON) #测试之后发现这个不开也是可以的
+	set_property(
+		TARGET ${RLUA_TARGET}
+		PROPERTY INSTALL_RPATH
+		"@executable_path/"
+		"@executable_path/../lib/"
+	)
 endif()
 #############################################
