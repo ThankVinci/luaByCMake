@@ -144,10 +144,16 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set(CMAKE_MACOSX_RPATH ON)
-	add_custom_command(
-		TARGET ${LUA_EXEC} 
-		POST_BUILD 
-		COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change "@executable_path/;@executable_path/../lib/" "$<TARGET_FILE:${LUA_EXEC}>" )
+	set_property(
+		TARGET ${LUA_EXEC}
+		PROPERTY INSTALL_RPATH
+		"@executable_path/"
+		"@executable_path/../lib/"
+	)
+	#add_custom_command(
+	#	TARGET ${LUA_EXEC} 
+	#	POST_BUILD 
+	#	COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change "@executable_path/;@executable_path/../lib/" "$<TARGET_FILE:${LUA_EXEC}>" )
 endif()
 #############################################
 
