@@ -85,6 +85,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #GNU编译产生的库名前面会自己加上lib
 	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	SET_TARGET_PROPERTIES(liblua_shared PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #AppleClang编译产生的库名前面会自己加上lib
 	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
@@ -121,7 +122,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux") #linux还有个readline的构建，�
 	target_link_libraries(luac ${CMAKE_EXE_LINKER_FLAGS} )
 	target_link_libraries(lua ${CMAKE_EXE_LINKER_FLAGS} )
 	SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
-	SET(CMAKE_INSTALL_RPATH "\${ORIGIN}/../lib")
+	SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+	SET(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	add_compile_definitions(LUA_USE_MACOSX LUA_USE_READLINE )
 	set(CMAKE_EXE_LINKER_FLAGS "-lreadline")
