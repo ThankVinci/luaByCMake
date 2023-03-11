@@ -1,8 +1,14 @@
 #1.运行库使用变量、库名#################
 set(LUARNR_SHARED "luarnr_shared")
+set(LUARNR_STATIC "luarnr_static")
 set(DEMO_EXEC "demo_exec")
 set(LUARNR "luarnr")
 set(DEMO "demo")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	set(LUARNR_TARGET ${LUARNR_SHARED} )
+else()
+	set(LUARNR_TARGET ${LUARNR_STATIC} )
+endif()
 #############################################
 
 #2.设置目标生成目录##########################
@@ -22,16 +28,20 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src DEMO_SRC )
 #############################################
 
 #4.添加生成目标##############################
-add_library(${LUARNR_SHARED} SHARED ${LUARNR_CLASS_SRC})
-set_target_properties(${LUARNR_SHARED} PROPERTIES OUTPUT_NAME ${LUARNR})
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	add_library(${LUARNR_TARGET} SHARED ${LUARNR_CLASS_SRC})
+else()
+	add_library(${LUARNR_TARGET} STATIC ${LUARNR_CLASS_SRC})
+endif()
+set_target_properties(${LUARNR_TARGET} PROPERTIES OUTPUT_NAME ${LUARNR})
 
-#add_executable(${DEMO_EXEC} ${DEMO_SRC} ${IO_SRC} )
-#set_target_properties(${DEMO_EXEC} PROPERTIES OUTPUT_NAME ${DEMO})
+add_executable(${DEMO_EXEC} ${DEMO_SRC} ${IO_SRC} )
+set_target_properties(${DEMO_EXEC} PROPERTIES OUTPUT_NAME ${DEMO})
 #############################################
 
 #5.链接库####################################
-target_link_libraries(${LUARNR_SHARED} ${RLUA_STATIC}) #链接rlua的静态库
-#target_link_libraries(${DEMO_EXEC} ${LUARNR_SHARED}) #链接LUARNR_SHARED
+target_link_libraries(${LUARNR_TARGET} ${RLUA_STATIC}) #链接rlua的静态库
+target_link_libraries(${DEMO_EXEC} ${LUARNR_TARGET}) #链接LUARNR_SHARED
 #############################################
 
 #6.编译器、预定义、链接选项、生成事件########
@@ -43,13 +53,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 			COMMAND strip "-s" "$<TARGET_FILE:${LUARNR_SHARED}>") 
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	target_link_libraries(${LUARNR_SHARED} ${CMAKE_EXE_LINKER_FLAGS} )
+	#target_link_libraries(${LUARNR_SHARED} ${CMAKE_EXE_LINKER_FLAGS} )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 #############################################
 
 #7.生成文件后进行安装########################
-install(TARGETS ${LUARNR_SHARED}
+install(TARGETS ${DEMO_EXEC} ${LUARNR_SHARED}
 	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin
 	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib
 	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib
