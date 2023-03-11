@@ -1,5 +1,5 @@
-﻿#1.调试模块使用变量、模块名##########################
-set(RLUA_EXEC_MAIN ON) #调试用
+﻿#1.调试模块使用变量、模块名#################
+set(RLUA_EXEC_MAIN OFF) #调试用
 
 set(RLUA_SHARED "rua_shared")
 set(RLUA_EXEC "rua_exec")
@@ -11,7 +11,7 @@ if(RLUA_EXEC_MAIN)
 else()
 	set(RLUA_TARGET ${RLUA_SHARED})
 endif()
-############################################
+#############################################
 
 #2.设置目标生成目录##########################
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin) #设置可执行文件输出目录（Windows下dll会产生在这个目录下）
@@ -67,14 +67,14 @@ endif()
 
 #7.设置RunPath###############################
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	if(CMAKE_C_COMPILER_ID STREQUAL "GNU") #makefile中mingw生成的库名就直接叫原本的名字，所以这里进行删除
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set_property(
 		TARGET ${RLUA_TARGET}
 		PROPERTY INSTALL_RPATH
 		"$ORIGIN/"
-		"$ORIGIN/../lib/"
+		"$ORIGIN/lib/"
 	)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	#set(CMAKE_MACOSX_RPATH ON) #测试之后发现这个不开也是可以的
@@ -82,7 +82,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 		TARGET ${RLUA_TARGET}
 		PROPERTY INSTALL_RPATH
 		"@executable_path/"
-		"@executable_path/../lib/"
+		"@executable_path/lib/"
 	)
 endif()
 #############################################

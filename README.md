@@ -51,39 +51,16 @@
 
 我宣布这是我优化这个项目以来最爽的一次，学到很多东西。
 
+兴奋到语无伦次了，抱歉。
+
 今天把电脑升级到32G内存，于是装了个MacOS的虚拟机，想到luaByCMake项目只配置了Linux和Windows，所以又增加了Darwin的编译设置，不更新不打紧，一更新我的强迫症就犯了，所以此次更新除了增加Darwin以外，整个CMakeLists文件大换血：
 
-1. 规范化luaByCmake项目中的构建，根据不同生成设定去设置名称和序号，使得整个CMakeLists文件看上去一目了然，可能会频繁更新修改的内容就放到最下面；
-
+1. 本次更新规范化了luaByCmake项目的构建，按照每个步骤去分块，给每个步骤标序号，同时尽可能把每个步骤之间的耦合降到最低，使得整个CMakeLists文件看上去一目了然，改动的时候不会牵一发而动全身；
 2. 之前写的时候是按编译器类型去分，但是现在发现一个问题，我只有在Windows下才会同时用到两种编译器（MinGW和MSVC），而用Linux时只会用到GNU，至于MacOS用的频次更少，所以我应该以操作系统来进行区分，这样哪怕该操作系统下有什么其他的编译器，再做区分就好了；
-
-3. 此次更新除了新增Darwin以外还再看了一遍lua的makefile，关于我之前不懂的地方我没敢加上去的东西：
-
-   ```makefile
-   mingw:
-   $(MAKE) "LUA_A=lua54.dll" "LUA_T=lua.exe" \
-   "AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
-   "SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
-   $(MAKE) "LUAC_T=luac.exe" luac.exe
-   ```
-
-   `strip --strip-unneeded`，就是删除符号表中不需要的符号，`SYSLDFLAGS=-s`则是传递参数给链接器ld，让其删除所有符号，一开始我是不知道这两个东西的区别的，就在想为什么一个是执行strip另一个是传递给链接器，后来我试了好几次都报错，问了chatgpt才知道不能直接把--strip-unneeded传给链接器，因为这个是strip的运行参数。所以最后的解决方案是在CMakeLists中调用自定义命令去执行strip，把生成的lua54.dll中不需要的符号进行删除；同理也删除lua.exe的所有符号。
-
-   最让我觉得惊奇的是，我故意把生成的模块的符号表全删除了，但是仍然能够完成require操作，同时模块的体积确实变小了。
-
-4. 此次更新还把原先的luaC包模块的模版大改了，现在的模版模块只需要复制一份，然后简单改一下处于文件头部分的生成目标名就可以了。
-
-
-## 2023.3.11第二次更新
-
-本次更新是小问题，小细节
-
-1. MacOS下编译lua模块产生了dylib导致无法加载，做了一点修改使得编译产生so库，详情见总结的坑（5.关于动态库）
-1. 也是因为解决1的问题，使得Windows编译出来的lua模块不再是RUNTIME而是LIBRARY了。
-
-## 2023.3.11第三次更新
-
-本次更新还是小问题，除了Windows外的其他平台生成lua时均不链接动态库文件。本来想废弃动态库，但是模块链接动态库是真的香。
+3. 编译mingw的lua.exe和lua54.dll的时候，按照原先项目中的设定进行符号删除，给二进制文件做裁剪，lua54删除不需要的符号，lua删除全部符号；
+4. 编译linux下的lua的时候，CMAKE_EXE_LINKER_FLAGS这个cmake变量不会起作用，所以linux下需要手动设置target_link_libraries，把变量添加到链接中，其他平台则不需要，只要把传给ld的选项需要添加到变量即可完成链接；
+5. linux和darwin下，链接动态库会存在一个路径问题，查了一下发现可以通过指定runpath来解决，于是就这么搞了，详情见坑的解析；
+6. 本次更新把lua模块的模版也进行一个大改，现在如果要新建一个模版的话，只需要把模版复制一份，改目录名和CMakeLists中的模块名称，新建模块更方便了；
 
 ## 2023.3.8~3.9更新
 
@@ -380,6 +357,27 @@ dumpbin /exports dllPath
 
 3. 关于strip，因为看了MinGW的配置中使用了`strip --strip-unneeded`，但是下面却使用SYSLDFLAGS传递了`-s`，这让我不解，最后才知道，虽然strip也有-s，但是和链接器的-s却不是同一个-s，只是含义一样，所以`--strip-unneeded`链接器是不认的，只能手动设置，幸好是cmake中可以执行自定义的命令
 
+   ```makefile
+   #makefile中对mingw的编译配置
+   mingw:
+   $(MAKE) "LUA_A=lua54.dll" "LUA_T=lua.exe" \
+   "AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
+   "SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
+   $(MAKE) "LUAC_T=luac.exe" luac.exe
+   ```
+
+   `strip --strip-unneeded`，就是删除符号表中不需要的符号，`SYSLDFLAGS=-s`则是传递参数给链接器ld，让其删除所有符号，一开始我是不知道这两个东西的区别的，就在想为什么一个是执行strip另一个是传递给链接器，后来我试了好几次都报错，问了chatgpt才知道不能直接把--strip-unneeded传给链接器，因为这个是strip的运行参数。所以最后的解决方案是在CMakeLists中调用自定义命令去执行strip，把生成的lua54.dll中不需要的符号进行删除；同理也删除lua.exe的所有符号。
+
+   调用自定义命令在cmake中对目标进行符号删除
+
+   ```cmake
+   add_custom_command(TARGET ${MODULE_NAME_WITH_MODULE} #直接把符号都删了
+       POST_BUILD #在目标生成后再执行
+       COMMAND strip "-s" "$<TARGET_FILE:${MODULE_NAME_WITH_MODULE}>") 
+   ```
+
+   最让我觉得惊奇的是，我故意把生成的模块的符号表全删除了，但是仍然能够完成require操作，同时模块的体积确实变小了。
+
 ## 4.关于符号
 
 1. MinGW编译的lua模块不管有没有用暴露接口的宏，模块中的接口都是能够找到的，让我比较懵逼的是，如果使用strip删除了模块了所有符号，使用nm显示没有符号的情况下，仍然可以require该模块成功。这属实是震惊到我了。
@@ -392,9 +390,58 @@ dumpbin /exports dllPath
    STATIC, SHARED, or MODULE may be given to specify the type of library to be created. STATIC libraries are archives of object files for use when linking other targets. SHARED libraries are linked dynamically and loaded at runtime. MODULE libraries are plugins that are not linked into other targets but may be loaded dynamically at runtime using dlopen-like functionality. If no type is given explicitly the type is STATIC or SHARED based on whether the current value of the variable BUILD_SHARED_LIBS is ON. For SHARED and MODULE libraries the POSITION_INDEPENDENT_CODE target property is set to ON automatically. A SHARED library may be marked with the FRAMEWORK target property to create an macOS Framework.
    ```
 
-   cmake官方文档是这么写的，`SHARED`库动态链接并在运行时加载。 `MODULE`库是没有链接到其他目标但可以在运行时使用类似 dlopen 的功能动态加载的插件。也就是说，编译这些模块，其实都不是运行时加载的，都是动态添加的插件，因此，所有的lua模块生成库都应该改成`module`。
+   cmake官方文档是这么写的，`SHARED`库动态链接并在运行时加载。 `MODULE`库是没有链接到其他目标但可以在运行时使用类似 dlopen 的功能动态加载的插件。也就是说，编译这些模块，其实都不是运行时加载的，都是动态添加的插件，因此，所有的lua模块生成库都应该改成`MODULE`。
 
-   一个小细节吧，自从把生成的模块设置成MODULE之后，Windows下模块的生成目录就是library了。
+   然后我就设置模块为`MODULE`，结果MacOS编译出来so文件了。
 
-2. 之前我就纳闷了，为什么lua的makefile里面，没有编译出除了Windows平台之外的动态链接库，现在我终于明白了，太麻烦了，在那个目录下编译之后，lua就依赖了那个目录下的lua.so，很麻烦，所以我就把除了Windows外的lua链接动态库都取消了，取消掉之后又发现编译出来的模块太大了，所以又加回去，只是lua不链接动态库了。
+2. 一个小细节，之前一直认为Windows下编译dll都会放到bin目录，因为会识别成RUNTIME，但其实不是这样，当编译动态库指定为`MODULE`时，编译出来的dll就是纯纯的库，所以会被放到LIBRARY中，因此从中能够得到一个结论，如果编译的动态库不是运行时链接而是在程序中作为模块打开（比如说lua的C包），那么编译时就应该编译成`MODULE`而不是`SHARED`。
 
+3. 其实这么来看，lua原项目的配置有点不太合理，只有在Windows下编译会产生动态库和链接动态库，linux和MacOS下，只会产生静态库和链接静态库，这意味着每次链接一次lua静态库就会多一份资源的浪费，其实很没有必要，但是如果在linux下进行编译的话，存在一个问题，首先是运行库liblua.so，lua需要链接liblua.so才可以运行，但是编译的时候这个链接的路径就写死了，可以用：
+
+   ```shell
+   ldd xxx
+   ```
+
+   来查看链接的库的路径，然后使用：
+
+   ```shell
+   readelf -d xxx
+   ```
+
+   来查看elf表中有没有RUNPATH或者RPATH属性。
+
+   RUNPATH其实也就是告诉二进制文件，让它运行的时候去哪里找so文件，一般来说，so文件都是存在于系统目录中，它找就去系统目录找，哪怕so文件和exec文件放在一起，程序都找不到库，所以为了解决这个实际问题，我就设置了RPATH属性，这样只要RPATH的路径下有库那就可以连接。
+
+## 6.关于RPATH
+
+1. 关于RPATH的问题，说简单也简单，说复杂也复杂，首先就是lua中涉及到的两种库，运行时链接库和模块库，我们在编译的时候，lua链接了这个动态库，模块也链接了这个动态库，使用ldd指令就可以看到程序或者模块库链接的动态库以及地址，这里直接给出一个暴论：不用管模块的链接，只要lua主程序能加载到动态库就行，那就得讲讲加载的规则，lua主程序或者具有lua功能的程序/库要可以加载到这个库，那么就可以这么设置， lua主程序还是按照它原来的加载，也就是加载lua本目录或者父目录下的lib目录中的liblua，而我们想实现具有lua脚本执行功能的库，就可以加载本目录或者本目录下的lib/lua目录下的liblua。
+
+2. 看网络上天花乱坠的介绍方法，结果我是试了一天才试出来CMAKE中可用的方法，使用方法很简单，分linux和macos：
+
+   ```cmake
+   if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+   	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+   	endif()
+   elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+   	set_property(
+   		TARGET ${LUA_EXEC}
+   		PROPERTY INSTALL_RPATH
+   		"$ORIGIN/"
+   		"$ORIGIN/../lib/"
+   	)
+   elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+   	#set(CMAKE_MACOSX_RPATH ON) #测试之后发现这个不开也是可以的
+   	set_property(
+   		TARGET ${LUA_EXEC}
+   		PROPERTY INSTALL_RPATH
+   		"@executable_path/"
+   		"@executable_path/../lib/"
+   	)
+   endif()
+   ```
+
+   设置什么CMAKE中的RPATH之类的变量为TRUE或者FALSE我试过很多次并没有决定性作用，而生成目标的INSTALL_RPATH属性才有决定性作用。
+
+3. 关于封装了lua脚本执行功能的库和liblua的链接问题，可能需要再商榷一下，因为如果考虑搞跨平台的话，Windows只能设置该运行库与liblua在同一目录下。
+
+4. 最后一个也是最重要的，和CMAKE无关，是lua源码中加载模块库的路径cpath，在非Windows的情况下，我在源码中新增了父目录的lib目录；在使用运行库的情况下，应该新增一个寻找同级目录下的lib/lua/5.4。

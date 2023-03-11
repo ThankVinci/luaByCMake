@@ -32,6 +32,7 @@ install(TARGETS ${MODULE_NAME_WITH_MODULE}
 	#RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
 	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
 )#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
+#补充：当生成的动态库为MODULE时，会放入到LIBRARY中，所以注释了RUNTIME一行
 #############################################
 
 #6.目标链接设置##############################
