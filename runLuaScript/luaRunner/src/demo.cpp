@@ -10,9 +10,9 @@ int main()
 
     ITextFileReader* reader = new CStandardFileReader;
 
-    LuaRnr* luarnr = new LuaRnr(reader,".\\main.lua");
-    luarnr->addArg("C:\\Projects\\CMakeProjs\\LuaRunnerByCMake\\out\\build\\x64-Release\\bin\\entry.json");
-    luarnr->addArg("C:\\Projects\\CMakeProjs\\LuaRunnerByCMake\\out\\build\\x64-Release\\bin\\entry.json");
+    LuaRnr* luarnr = new LuaRnr(reader,"./main.lua");
+    luarnr->addArg("./entry.json");
+    luarnr->addArg("./entry.json");
     luarnr->run();
     luarnr->printRetv();
     return 0;
