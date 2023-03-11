@@ -1,5 +1,5 @@
 ﻿#1.调试模块使用变量、模块名##########################
-set(RLUA_EXEC_MAIN ON) #调试用
+set(RLUA_EXEC_MAIN OFF) #调试用
 
 set(RLUA_SHARED "rua_shared")
 set(RLUA_EXEC "rua_exec")
@@ -58,6 +58,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 			#COMMAND strip "-s" "$<TARGET_FILE:${MODULE_NAME_WITH_MODULE}>") 
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	if(RLUA_EXEC_MAIN)
+		target_link_libraries(${RLUA_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
+	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 #############################################
