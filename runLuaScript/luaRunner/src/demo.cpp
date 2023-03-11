@@ -7,10 +7,11 @@
 
 int main()
 {
-
+    printf("创建reader前\n");
     ITextFileReader* reader = new CStandardFileReader;
-
+    printf("创建reader后\n");
     LuaRnr* luarnr = new LuaRnr(reader,"./main.lua");
+    printf("创建luarnr后\n");
     luarnr->addArg("./entry.json");
     luarnr->addArg("./entry.json");
     luarnr->run();
