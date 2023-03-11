@@ -81,7 +81,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU") #makefile中mingw生成的库名就直接叫原本的名字，所以这里进行删除
 		set_target_properties(liblua_static PROPERTIES PREFIX "") #删除前缀
 		set_target_properties(liblua_shared PROPERTIES PREFIX "") 
-		set(CMAKE_EXE_LINKER_FLAGS -Wl,-rpath,'$$ORIGIN/../lib')
+		set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'$$ORIGIN/../lib'")
 		#SET(CMAKE_SKIP_RPATH FALSE) 
 		#SET(CMAKE_SKIP_BUILD_RPATH FALSE) 
 		#SET(CMAKE_SKIP_INSTALL_RPATH FALSE) 
