@@ -89,7 +89,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(CMAKE_SKIP_BUILD_RPATH FALSE)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 	set(CMAKE_INSTALL_RPATH "./:$ORIGIN/../../")
-	set_target_properties(lua PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
+	set_target_properties(lua_exec PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #AppleClang编译产生的库名前面会自己加上lib
 	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
@@ -97,7 +97,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	#set(CMAKE_INSTALL_RPATH "./:@rpath/../../")
 	#set_target_properties(lua PROPERTIES INSTALL_RPATH "@executable_path/../lib")
 	add_custom_command(TARGET lua_exec POST_BUILD 
-	COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:lua>)
+	COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:lua_exec>)
 	#install_name_tool -add_rpath "./;@rpath/../lib/"
 endif()
 #############################################
