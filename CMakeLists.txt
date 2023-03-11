@@ -117,9 +117,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux") #linux还有个readline的构建，但是不知道咋整
 	add_compile_definitions(LUA_USE_LINUX ) #LUA_USE_READLINE	
-	set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl") #-lreadline 
+	set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl -Wl,-rpath,''") #-lreadline 
 	target_link_libraries(luac ${CMAKE_EXE_LINKER_FLAGS} )
 	target_link_libraries(lua ${CMAKE_EXE_LINKER_FLAGS} )
+	SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+	SET(CMAKE_INSTALL_RPATH "\${ORIGIN}/../lib")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	add_compile_definitions(LUA_USE_MACOSX LUA_USE_READLINE )
 	set(CMAKE_EXE_LINKER_FLAGS "-lreadline")
