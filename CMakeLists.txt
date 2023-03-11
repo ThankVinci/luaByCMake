@@ -93,10 +93,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #AppleClang编译产生的库名前面会自己加上lib
 	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
-	add_custom_command(TARGET lua
-    POST_BUILD COMMAND
-    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath"./;@loader_path/../lib/"
-    $<TARGET_FILE:lua>)
+	set(CMAKE_MACOSX_RPATH ON)
+	set_target_properties(lua PROPERTIES INSTALL_RPATH "@executable_path/../lib")
 endif()
 #############################################
 
