@@ -76,7 +76,6 @@ install(TARGETS ${LUA_EXEC} ${LUAC_EXEC} ${LIBLUA_SHARED} ${LIBLUA_STATIC}
 #############################################
 
 #10.生成目标属性设置###########################
-
 set_target_properties(${LUAC_EXEC} PROPERTIES OUTPUT_NAME ${LUA_NAME}c)
 set_target_properties(${LUA_EXEC} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 
@@ -90,27 +89,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #GNU编译产生的库名前面会自己加上lib
 	set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
-	#设置runpath
-	set_property(
-		TARGET ${LUA_EXEC}
-		PROPERTY INSTALL_RPATH
-		"$ORIGIN/"
-		"$ORIGIN/../lib/"
-	)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #AppleClang编译产生的库名前面会自己加上lib
 	set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
-	set(CMAKE_MACOSX_RPATH ON)
-	
-	#message(STATUS ${INSTALL_RPATH_NAME})
-	#set(CMAKE_INSTALL_RPATH "./:@rpath/../../")
-	#set_target_properties(lua PROPERTIES INSTALL_RPATH "@executable_path/../lib")
-	add_custom_command(
-		TARGET ${LUA_EXEC} 
-		POST_BUILD 
-		COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:${LUA_EXEC}>
-	)
-	#install_name_tool -add_rpath "./;@rpath/../lib/"
 endif()
 #############################################
 
@@ -150,7 +131,28 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 #############################################
 
-#12.添加生成子项目目录#######################
+#12.设置RunPath##############################
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU") #makefile中mingw生成的库名就直接叫原本的名字，所以这里进行删除
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	set_property(
+		TARGET ${LUA_EXEC}
+		PROPERTY INSTALL_RPATH
+		"$ORIGIN/"
+		"$ORIGIN/../lib/"
+	)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+	set(CMAKE_MACOSX_RPATH ON)
+	add_custom_command(
+		TARGET ${LUA_EXEC} 
+		POST_BUILD 
+		COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:${LUA_EXEC}>
+	)
+endif()
+#############################################
+
+#13.添加生成子项目目录#######################
 add_subdirectory(runLuaScript )
 add_subdirectory(libdemo )
 add_subdirectory(lua-cjson-general ) 

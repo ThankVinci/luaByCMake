@@ -60,6 +60,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	if(RLUA_EXEC_MAIN)
 		target_link_libraries(${RLUA_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
+		#设置runpath
+		set_property(
+			TARGET ${LUA_EXEC}
+			PROPERTY INSTALL_RPATH
+			"$ORIGIN/"
+			"$ORIGIN/../lib/"
+		)
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
