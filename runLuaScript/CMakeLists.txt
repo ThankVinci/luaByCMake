@@ -1,5 +1,5 @@
 ﻿#1.调试模块使用变量、模块名##########################
-set(RLUA_EXEC_MAIN OFF) #调试用
+set(RLUA_EXEC_MAIN ON) #调试用
 
 set(RLUA_SHARED "rua_shared")
 set(RLUA_EXEC "rua_exec")
