@@ -69,11 +69,7 @@ install(TARGETS ${MODULE_NAME_WITH_MODULE}
 #############################################
 
 #6.目标链接设置##############################
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	target_link_libraries(${MODULE_NAME_WITH_MODULE} liblua_shared)
-else()
-	target_link_libraries(${MODULE_NAME_WITH_MODULE} liblua_static)
-endif()
+target_link_libraries(${MODULE_NAME_WITH_MODULE} liblua_shared)
 #############################################
 #############################################
 #		以下的内容就属于需要经常改的了		#
