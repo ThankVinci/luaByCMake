@@ -38,6 +38,9 @@ target_link_libraries(${DEMO_EXEC} ${LUARNR_SHARED}) #链接LUARNR_SHARED
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	add_compile_definitions(LUARNR_API )
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		add_custom_command(TARGET ${LUARNR_SHARED} #直接把符号都删了
+			POST_BUILD #在目标生成后再执行
+			COMMAND strip "-s" "$<TARGET_FILE:${LUARNR_SHARED}>") 
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	if(RLUA_EXEC_MAIN)

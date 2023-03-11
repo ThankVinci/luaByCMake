@@ -217,6 +217,13 @@
 		
 #endif
 
+#define LUA_CPATH_DEFAULT \
+		LUA_CDIR"?.so;" \
+		LUA_CDIR"loadall.so;" \
+		"../lib/lua/" LUA_VDIR "/?.so;" \
+		"./luamodules/lib/" LUA_VDIR "/?.so;" \ "./?.so"
+#endif
+
 #else			/* }{ */
 
 #define LUA_ROOT	"/usr/local/"
@@ -234,8 +241,8 @@
 #define LUA_CPATH_DEFAULT \
 		LUA_CDIR"?.so;" \
 		LUA_CDIR"loadall.so;" \
-		"../lib/lua/" LUA_VDIR "/?.so;" \ //使得编译测试时可以不安装到系统目录，直接通过相对路径找到模块
-		"./luamodules/lib/" LUA_VDIR "/?.so;" \ //使得自己写的luarunner能加载同级目录下的/luamodules/lib目录下的模块
+		"../lib/lua/" LUA_VDIR "/?.so;" \ 
+		"./luamodules/lib/" LUA_VDIR "/?.so;" \ 
 		"./?.so"
 #endif
 
