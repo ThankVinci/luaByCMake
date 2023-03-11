@@ -236,7 +236,7 @@
 		LUA_CDIR"?.so;" \
 		LUA_CDIR"loadall.so;" \
 		"../lib/lua/" LUA_VDIR "/?.so;" \
-		"./luamodules/lib/" LUA_VDIR "/?.so;" \ "./?.so"
+		"./luamodules/lib/" LUA_VDIR "/?.so;" "./?.so"
 #endif
 
 #endif			/* } */
