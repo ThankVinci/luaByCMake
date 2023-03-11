@@ -95,7 +95,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	#set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 	#set(CMAKE_INSTALL_RPATH "./:$ORIGIN/../../")
 	set(INSTALL_RUNPATH "./;$ORIGIN/../lib/" )
+	messgae(STATUS "baga")
 	messgae(STATUS ${INSTALL_RUNPATH})
+	messgae(STATUS "baga")
 	set_target_properties(${LUA_EXEC} PROPERTIES INSTALL_RPATH ${INSTALL_RUNPATH} )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #AppleClang编译产生的库名前面会自己加上lib
@@ -113,8 +115,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	#install_name_tool -add_rpath "./;@rpath/../lib/"
 endif()
 #############################################
-
-
 
 #11.编译器、预定义、链接选项、生成事件#######
 
