@@ -505,7 +505,7 @@ static char* readFileAsString(const char* luafilePath) {
 
 //模拟demo
 //不要无脑运行这个主函数，要注意传入的参数和个数是否对应，读取的lua文件要能够找得到
-int main() {
+int main(int argc2,char** argv2) {
     int argc = 4;
     char** argv = (char**)malloc(sizeof(char*)*argc);
     if (argv == NULL) return EXIT_FAILURE;
@@ -514,7 +514,9 @@ int main() {
     argv[3] = "arg2";
     
     //lua文件读取
-    const char* luafilePath = "C:\\Users\\JohnSmith\\Desktop\\main.lua";
+    const char* luafilePath;
+    if (argc2 > 1) luafilePath = argv2[1];
+    else luafilePath = "C:\\Users\\JohnSmith\\Desktop\\main.lua";
     argv[1] = readFileAsString(luafilePath);
     if(argv[1] == NULL) return EXIT_FAILURE;
 
