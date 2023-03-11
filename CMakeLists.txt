@@ -94,18 +94,26 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	#set(CMAKE_SKIP_BUILD_RPATH FALSE)
 	#set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 	#set(CMAKE_INSTALL_RPATH "./:$ORIGIN/../../")
-	set_target_properties(${LUA_EXEC} PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
+	set(INSTALL_RUNPATH "./;$ORIGIN/../lib/" )
+	set_target_properties(${LUA_EXEC} PROPERTIES INSTALL_RPATH ${INSTALL_RUNPATH})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #AppleClang编译产生的库名前面会自己加上lib
 	set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 	set(CMAKE_MACOSX_RPATH ON)
+	
+	#message(STATUS ${INSTALL_RPATH_NAME})
 	#set(CMAKE_INSTALL_RPATH "./:@rpath/../../")
 	#set_target_properties(lua PROPERTIES INSTALL_RPATH "@executable_path/../lib")
-	add_custom_command(TARGET ${LUA_EXEC} POST_BUILD 
-	COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:${LUA_EXEC}>)
+	add_custom_command(
+		TARGET ${LUA_EXEC} 
+		POST_BUILD 
+		COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:${LUA_EXEC}>
+	)
 	#install_name_tool -add_rpath "./;@rpath/../lib/"
 endif()
 #############################################
+
+
 
 #11.编译器、预定义、链接选项、生成事件#######
 
