@@ -5,12 +5,8 @@
 #define LUARNR_DLL_API __declspec(dllexport)
 #else
 #define LUARNR_DLL_API 
+
 #endif // LUARNR_API
-
-#endif
-
-#ifndef LUARNR_DLL_API
-
 #endif
 
 #include <stddef.h>
