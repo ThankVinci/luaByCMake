@@ -96,8 +96,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	#设置runpath
 	set(CMAKE_SKIP_BUILD_RPATH FALSE)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-	set(CMAKE_INSTALL_RPATH "./:$ORIGIN/../../")
-	set_target_properties(lua PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
+	set(CMAKE_INSTALL_RPATH "./;@loader_path/../../")
+	set_target_properties(lua PROPERTIES INSTALL_RPATH "./;@loader_path/../lib/")
 endif()
 #############################################
 
