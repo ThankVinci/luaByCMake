@@ -147,7 +147,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	add_custom_command(
 		TARGET ${LUA_EXEC} 
 		POST_BUILD 
-		COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@loader_path/../lib/" $<TARGET_FILE:${LUA_EXEC}>
+		COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "./;@rpath/../lib/" $<TARGET_FILE:${LUA_EXEC}>
 	)
 endif()
 #############################################
