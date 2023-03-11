@@ -80,31 +80,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua54)
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU") #makefile中mingw生成的库名就直接叫原本的名字，所以这里进行删除
 		set_target_properties(liblua_static PROPERTIES PREFIX "") #删除前缀
-		set_target_properties(liblua_shared PROPERTIES PREFIX "") 
-		#set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'$$ORIGIN/../lib'")
-		#SET(CMAKE_SKIP_RPATH FALSE) 
-		SET(CMAKE_SKIP_BUILD_RPATH FALSE) 
-		#SET(CMAKE_SKIP_INSTALL_RPATH FALSE) 
-		SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-		#SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-		#SET(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
-		SET(CMAKE_INSTALL_RPATH "\${ORIGIN}/../lib")
-		#message(STATUS ${CMAKE_INSTALL_RPATH})
-		#set_target_properties(lua PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
+		set_target_properties(liblua_shared PROPERTIES PREFIX "")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #GNU编译产生的库名前面会自己加上lib
 	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
-	set(CMAKE_SKIP_BUILD_RPATH FALSE) 
-	#SET(CMAKE_SKIP_INSTALL_RPATH FALSE) 
+	#设置runpath
+	set(CMAKE_SKIP_BUILD_RPATH FALSE)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-	#SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-	#SET(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 	set(CMAKE_INSTALL_RPATH "./:$ORIGIN/../../")
 	set_target_properties(lua PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #AppleClang编译产生的库名前面会自己加上lib
 	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	#设置runpath
+	set(CMAKE_SKIP_BUILD_RPATH FALSE)
+	set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+	set(CMAKE_INSTALL_RPATH "./:$ORIGIN/../../")
+	set_target_properties(lua PROPERTIES INSTALL_RPATH "./:$ORIGIN/../lib/")
 endif()
 #############################################
 
