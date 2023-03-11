@@ -13,6 +13,7 @@
 
 #endif
 
+#include <stddef.h>
 class LuaRnr_imp; //lua运行器的实际实现
 class ITextFileReader; //抽象reader接口
 
