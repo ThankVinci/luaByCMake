@@ -43,8 +43,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 			COMMAND strip "-s" "$<TARGET_FILE:${LUARNR_SHARED}>") 
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	target_link_libraries(${DEMO_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
-	add_compile_options(-pedantic -fpic) #GNU支持的编译器选项
+	target_link_libraries(${LUARNR_SHARED} ${CMAKE_EXE_LINKER_FLAGS} )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 #############################################
