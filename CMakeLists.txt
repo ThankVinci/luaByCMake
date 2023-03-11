@@ -54,11 +54,11 @@ add_executable(lua ${LUA_PATH}) #添加生成可执行文件目标lua
 
 #8.生成可执行文件链接设置###################
 target_link_libraries(luac liblua_static ) #luac链接静态库
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+#if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	target_link_libraries(lua liblua_shared ) #lua链接动态库
-else()
-	target_link_libraries(lua liblua_static ) #lua链接静态库
-endif()
+#else()
+#	target_link_libraries(lua liblua_static ) #lua链接静态库
+#endif()
 #############################################
 
 #9.生成文件后进行安装的安装目录##############
