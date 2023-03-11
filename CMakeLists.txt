@@ -98,7 +98,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	message(STATUS "baga")
 	message(STATUS ${INSTALL_RUNPATH})
 	message(STATUS "baga")
-	set_target_properties(${LUA_EXEC} PROPERTIES INSTALL_RPATH ${INSTALL_RUNPATH} )
+	set_target_properties(${LUA_EXEC} PROPERTIES INSTALL_RPATH "${INSTALL_RUNPATH}" )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #AppleClang编译产生的库名前面会自己加上lib
 	set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
