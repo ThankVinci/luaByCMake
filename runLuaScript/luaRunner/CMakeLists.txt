@@ -59,7 +59,7 @@ endif()
 #############################################
 
 #7.生成文件后进行安装########################
-install(TARGETS ${DEMO_EXEC} ${LUARNR_SHARED}
+install(TARGETS ${DEMO_EXEC} ${LUARNR_TARGET}
 	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin
 	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib
 	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib
