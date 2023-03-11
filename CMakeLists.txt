@@ -44,7 +44,9 @@ list(REMOVE_ITEM LIB_SRC_FILES  ${LUA_PATH} ${LUAC_PATH}) #从源文件中剔除
 
 #6.添加生成库目标############################
 add_library(liblua_static STATIC ${LIB_SRC_FILES}) #添加生成静态库目标liblua_static
-add_library(liblua_shared SHARED ${LIB_SRC_FILES}) #添加生成动态库目标liblua_shared
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows") #只有Windows下会生成动态库
+	add_library(liblua_shared SHARED ${LIB_SRC_FILES}) #添加生成动态库目标liblua_shared
+endif()
 #############################################
 
 #7.添加生成可执行文件目标####################
@@ -54,15 +56,21 @@ add_executable(lua ${LUA_PATH}) #添加生成可执行文件目标lua
 
 #8.生成可执行文件链接设置###################
 target_link_libraries(luac liblua_static ) #luac链接静态库
-target_link_libraries(lua liblua_shared )
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	target_link_libraries(lua liblua_shared ) #lua链接动态库
+else()
+	target_link_libraries(lua liblua_static ) #lua链接静态库
+endif()
 #############################################
 
 #9.生成文件后进行安装的安装目录##############
-install(TARGETS lua luac liblua_shared liblua_static 
+install(TARGETS lua luac liblua_static 
 	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
-	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
 	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib/
 )
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	install(TARGETS liblua_shared RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/)
+endif()
 #############################################
 
 #############################################
@@ -80,10 +88,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #GNU编译产生的库名前面会自己加上lib
-	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	#set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #AppleClang编译产生的库名前面会自己加上lib
-	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	#set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
 endif()
 #############################################
 

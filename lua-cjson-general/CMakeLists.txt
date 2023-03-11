@@ -69,9 +69,12 @@ install(TARGETS ${MODULE_NAME_WITH_SHARED}
 #############################################
 
 #6.目标链接设置##############################
-target_link_libraries(${MODULE_NAME_WITH_SHARED} liblua_shared) #必须链接lua的动态库
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	target_link_libraries(${MODULE_NAME_WITH_SHARED} liblua_shared)
+else()
+	target_link_libraries(${MODULE_NAME_WITH_SHARED} liblua_static)
+endif()
 #############################################
-
 #############################################
 #		以下的内容就属于需要经常改的了		#
 #		（如果增加编译平台的话）			#
