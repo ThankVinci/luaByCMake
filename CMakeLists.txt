@@ -44,9 +44,7 @@ list(REMOVE_ITEM LIB_SRC_FILES  ${LUA_PATH} ${LUAC_PATH}) #从源文件中剔除
 
 #6.添加生成库目标############################
 add_library(liblua_static STATIC ${LIB_SRC_FILES}) #添加生成静态库目标liblua_static
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows") #只有Windows下会生成动态库
-	add_library(liblua_shared SHARED ${LIB_SRC_FILES}) #添加生成动态库目标liblua_shared
-endif()
+add_library(liblua_shared SHARED ${LIB_SRC_FILES}) #添加生成动态库目标liblua_shared
 #############################################
 
 #7.添加生成可执行文件目标####################
@@ -64,13 +62,11 @@ endif()
 #############################################
 
 #9.生成文件后进行安装的安装目录##############
-install(TARGETS lua luac liblua_static 
+install(TARGETS lua luac liblua_shared liblua_static 
 	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
+	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
 	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib/
 )
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	install(TARGETS liblua_shared RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/)
-endif()
 #############################################
 
 #############################################
@@ -88,10 +84,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #GNU编译产生的库名前面会自己加上lib
-	#set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set_target_properties(liblua_static PROPERTIES OUTPUT_NAME lua) #AppleClang编译产生的库名前面会自己加上lib
-	#set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
+	set_target_properties(liblua_shared PROPERTIES OUTPUT_NAME lua)
 endif()
 #############################################
 
@@ -131,7 +127,7 @@ endif()
 #############################################
 
 #12.添加生成子项目目录#######################
-add_subdirectory(runLuaScript )
+#add_subdirectory(runLuaScript )
 add_subdirectory(libdemo )
 add_subdirectory(lua-cjson-general ) 
 #############################################

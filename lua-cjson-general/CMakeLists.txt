@@ -1,7 +1,7 @@
 #1.设置模块名称##########################
 #这里提供了懒人一键式构建，一般来说只需要修改模块名称即可，但还是要发挥一下主观能动性
 #需要修改的地方可能也就目标链接和预定义之类的
-set(MODULE_NAME_WITH_SHARED "cjson_shared")
+set(MODULE_NAME_WITH_MODULE "cjson_module")
 set(MODULE_NAME "cjson")
 #############################################
 
@@ -52,17 +52,17 @@ set(MODULE_SRC_FILES ${SRC_DIR}/lua_cjson.c ${SRC_DIR}/strbuf.c ${FPCONV_SOURCES
 
 #4.添加生成库目标############################
 #注：由于lua对模块名称的限制以及一些编译器编译库文件名的会加上lib的缘故，所以要删除前缀
-add_library(${MODULE_NAME_WITH_SHARED} MODULE ${MODULE_SRC_FILES}) #添加生成动态库目标
-set_target_properties(${MODULE_NAME_WITH_SHARED} PROPERTIES OUTPUT_NAME ${MODULE_NAME})
+add_library(${MODULE_NAME_WITH_MODULE} MODULE ${MODULE_SRC_FILES}) #添加生成动态库目标
+set_target_properties(${MODULE_NAME_WITH_MODULE} PROPERTIES OUTPUT_NAME ${MODULE_NAME})
 if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 else()
-	set_target_properties(${MODULE_NAME_WITH_SHARED} PROPERTIES PREFIX "") #除了MSVC外的编译器都删除前缀
+	set_target_properties(${MODULE_NAME_WITH_MODULE} PROPERTIES PREFIX "") #除了MSVC外的编译器都删除前缀
 endif()
 #############################################
 
 #5.生成文件后进行安装的安装目录##############
 #lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
-install(TARGETS ${MODULE_NAME_WITH_SHARED} 
+install(TARGETS ${MODULE_NAME_WITH_MODULE} 
 	#RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
 	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
 )#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
@@ -70,9 +70,9 @@ install(TARGETS ${MODULE_NAME_WITH_SHARED}
 
 #6.目标链接设置##############################
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	target_link_libraries(${MODULE_NAME_WITH_SHARED} liblua_shared)
+	target_link_libraries(${MODULE_NAME_WITH_MODULE} liblua_shared)
 else()
-	target_link_libraries(${MODULE_NAME_WITH_SHARED} liblua_static)
+	target_link_libraries(${MODULE_NAME_WITH_MODULE} liblua_static)
 endif()
 #############################################
 #############################################
@@ -86,9 +86,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	add_compile_definitions(LUA_LIB )
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 		add_compile_options(-pedantic -fpic) #GNU支持的编译器选项
-		add_custom_command(TARGET ${MODULE_NAME_WITH_SHARED} #直接把符号都删了
+		add_custom_command(TARGET ${MODULE_NAME_WITH_MODULE} #直接把符号都删了
 			POST_BUILD #在目标生成后再执行
-			COMMAND strip "-s" "$<TARGET_FILE:${MODULE_NAME_WITH_SHARED}>") 
+			COMMAND strip "-s" "$<TARGET_FILE:${MODULE_NAME_WITH_MODULE}>") 
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	add_compile_options(-pedantic -fpic) #GNU支持的编译器选项
