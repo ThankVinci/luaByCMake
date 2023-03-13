@@ -1,4 +1,4 @@
-#include <stddef.h>
+ï»¿#include <stddef.h>
 #include <string>
 #include <vector>
 using std::string;
@@ -9,47 +9,47 @@ class ITextFileReader;
 #define PROGRAM_NAME "LuaRunner"
 class LuaRnr_imp {
 
-public: //¹¹ÔìºÍÎö¹¹
+public: //æž„é€ å’Œæžæž„
 	LuaRnr_imp(const char* luaScript);
 	LuaRnr_imp(ITextFileReader* reader, const char* luafilePath);
 	~LuaRnr_imp();
 
 public:
-	void resetLuaRunner(); /*ÓÃÓÚÖØÖÃluaÔËÐÐÆ÷£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void pushArg(string& arg); /*ÓÃÓÚÌí¼ÓluaÔËÐÐ²ÎÊý£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	bool ready(); /*ÓÃÓÚÅÐ¶ÏRunnerÊÇ·ñÒÑ¾­×¼±¸ºÃÔËÐÐ£¬ÅÐ¶ÏÒÀ¾ÝÊÇload³ÉÔ±*/
-	int run(); /*ÓÃÓÚÔËÐÐlua½Å±¾£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
+	void resetLuaRunner(); /*ç”¨äºŽé‡ç½®luaè¿è¡Œå™¨ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void pushArg(string& arg); /*ç”¨äºŽæ·»åŠ luaè¿è¡Œå‚æ•°ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	bool ready(); /*ç”¨äºŽåˆ¤æ–­Runneræ˜¯å¦å·²ç»å‡†å¤‡å¥½è¿è¡Œï¼Œåˆ¤æ–­ä¾æ®æ˜¯loadæˆå‘˜*/
+	int run(); /*ç”¨äºŽè¿è¡Œluaè„šæœ¬ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
 
 public:
-	size_t getArgListSize(); /*ÓÃÓÚ»ñÈ¡lua½Å±¾Ö´ÐÐµÄ²ÎÊýÊýÁ¿£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	size_t getRetvListSize(); /*ÓÃÓÚ»ñÈ¡lua½Å±¾Ö´ÐÐµÄ·µ»ØÖµÊýÁ¿£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	const char* getRetvByIdx(size_t idx); /*ÓÃÓÚ»ñÈ¡Ä³¸öÏÂ±êµÄ·µ»ØÖµ£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	size_t getRetvSizeByIdx(size_t idx); /*ÓÃÓÚ»ñÈ¡Ä³¸öÏÂ±êµÄ·µ»ØÖµµÄ×Ö½ÚÁ÷Êý¾Ý´óÐ¡£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	const string& getScript(); /*ÓÃÓÚ»ñÈ¡¼ÓÔØµ½RunnerÖÐµÄ½Å±¾£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
+	size_t getArgListSize(); /*ç”¨äºŽèŽ·å–luaè„šæœ¬æ‰§è¡Œçš„å‚æ•°æ•°é‡ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	size_t getRetvListSize(); /*ç”¨äºŽèŽ·å–luaè„šæœ¬æ‰§è¡Œçš„è¿”å›žå€¼æ•°é‡ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	const char* getRetvByIdx(size_t idx); /*ç”¨äºŽèŽ·å–æŸä¸ªä¸‹æ ‡çš„è¿”å›žå€¼ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	size_t getRetvSizeByIdx(size_t idx); /*ç”¨äºŽèŽ·å–æŸä¸ªä¸‹æ ‡çš„è¿”å›žå€¼çš„å­—èŠ‚æµæ•°æ®å¤§å°ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	const string& getScript(); /*ç”¨äºŽèŽ·å–åŠ è½½åˆ°Runnerä¸­çš„è„šæœ¬ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
 
 private:
-	void initOnce(); /*luaÔËÐÐÆ÷ÖÐÖ»ÐèÒª³õÊ¼»¯Ò»´ÎµÄ±äÁ¿£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void initRunner(); /*³õÊ¼»¯luaÔËÐÐÆ÷£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void loadScript(); /*°Ñ½Å±¾¼ÓÔØµ½²ÎÊýÁÐ±íÖÐ£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void saveScript(string script); /*½«½Å±¾±£´æµ½³ÉÔ±ÖÐ£¬Ö»»áÔÚ¹¹Ôìº¯ÊýÖÐµ÷ÓÃ£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
+	void initOnce(); /*luaè¿è¡Œå™¨ä¸­åªéœ€è¦åˆå§‹åŒ–ä¸€æ¬¡çš„å˜é‡ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void initRunner(); /*åˆå§‹åŒ–luaè¿è¡Œå™¨ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void loadScript(); /*æŠŠè„šæœ¬åŠ è½½åˆ°å‚æ•°åˆ—è¡¨ä¸­ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void saveScript(string script); /*å°†è„šæœ¬ä¿å­˜åˆ°æˆå‘˜ä¸­ï¼Œåªä¼šåœ¨æž„é€ å‡½æ•°ä¸­è°ƒç”¨ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
 
 private:
-	const char** packArgs(); /*ÔÚrunÖÐ½øÐÐrunLuaÊ±°ü×°m_argListÎª¶þÎ¬Êý×é£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void freeArgs(const char** args); /*ÔÚrunÖÐ½øÐÐrunLuaÖ®ºó»ØÊÕ×÷Îª²ÎÊýÁÐ±íµÄ¶þÎ¬Êý×é£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void clearArgList(); /*Çå¿Õ²ÎÊýÁÐ±í£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void clearRetValList(); /*Çå¿Õ·µ»ØÖµÁÐ±í£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void clearRetSizeList(); /*Çå¿Õ·µ»ØÖµ´óÐ¡ÁÐ±í£¬²»¿ÉÔÚÍâ²¿µ÷ÓÃ*/
+	const char** packArgs(); /*åœ¨runä¸­è¿›è¡ŒrunLuaæ—¶åŒ…è£…m_argListä¸ºäºŒç»´æ•°ç»„ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void freeArgs(const char** args); /*åœ¨runä¸­è¿›è¡ŒrunLuaä¹‹åŽå›žæ”¶ä½œä¸ºå‚æ•°åˆ—è¡¨çš„äºŒç»´æ•°ç»„ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void clearArgList(); /*æ¸…ç©ºå‚æ•°åˆ—è¡¨ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void clearRetValList(); /*æ¸…ç©ºè¿”å›žå€¼åˆ—è¡¨ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void clearRetSizeList(); /*æ¸…ç©ºè¿”å›žå€¼å¤§å°åˆ—è¡¨ï¼Œä¸å¯åœ¨å¤–éƒ¨è°ƒç”¨*/
 
 public:
-	void printScript(); /*´òÓ¡³ö½Å±¾ÄÚÈÝ*/
-	void printArguments(); /*´òÓ¡³ö²ÎÊýÁÐ±í*/
-	void printAllRetvDataInfo(); /*´òÓ¡³öËùÓÐ·µ»ØÖµµÄÐÅÏ¢£¬°üÀ¨Êý¾Ý´óÐ¡ºÍÊý¾Ý£¨ÒÔ×Ö·û´®µÄÐÎÊ½´òÓ¡³öÀ´£©*/
-	void printAllRetvDataByteArray(); /*´òÓ¡³öËùÓÐ·µ»ØÖµµÄÐÅÏ¢£¬°üÀ¨Êý¾Ý´óÐ¡ºÍÊý¾Ý£¨ÒÔ×Ö½ÚÊý×éµÄÐÎÊ½´òÓ¡³öÀ´£©*/
+	void printScript(); /*æ‰“å°å‡ºè„šæœ¬å†…å®¹*/
+	void printArguments(); /*æ‰“å°å‡ºå‚æ•°åˆ—è¡¨*/
+	void printAllRetvDataInfo(); /*æ‰“å°å‡ºæ‰€æœ‰è¿”å›žå€¼çš„ä¿¡æ¯ï¼ŒåŒ…æ‹¬æ•°æ®å¤§å°å’Œæ•°æ®ï¼ˆä»¥å­—ç¬¦ä¸²çš„å½¢å¼æ‰“å°å‡ºæ¥ï¼‰*/
+	void printAllRetvDataByteArray(); /*æ‰“å°å‡ºæ‰€æœ‰è¿”å›žå€¼çš„ä¿¡æ¯ï¼ŒåŒ…æ‹¬æ•°æ®å¤§å°å’Œæ•°æ®ï¼ˆä»¥å­—èŠ‚æ•°ç»„çš„å½¢å¼æ‰“å°å‡ºæ¥ï¼‰*/
 
 private:
-	vector<string> m_argList; /*´æ·ÅÔËÐÐ²ÎÊýÁÐ±í*/
-	vector<const char*> m_retValList; /*´æ·Å·µ»ØÖµÁÐ±í*/
-	vector<unsigned long long> m_retSizeList; /*´æ·Å·µ»ØÖµ´óÐ¡ÁÐ±í£¬Õâ¸ö´óÐ¡Ö¸µÄÊÇ×Ö½ÚÁ÷Êý¾ÝµÄ´óÐ¡£¬Èç¹û½ÓÊÕµÄÊÇ×Ö·û´®Êý¾ÝµÄ»°£¬¾Í²»ÓÃ¹Ü*/
-	string m_sScript; /*´æ·Ålua½Å±¾×Ö·û´®*/
-	bool m_bLoad; /*±íÊ¾ÊÇ·ñÒÑ¾­¼ÓÔØÁË½Å±¾×Ö·û´®*/
+	vector<string> m_argList; /*å­˜æ”¾è¿è¡Œå‚æ•°åˆ—è¡¨*/
+	vector<const char*> m_retValList; /*å­˜æ”¾è¿”å›žå€¼åˆ—è¡¨*/
+	vector<unsigned long long> m_retSizeList; /*å­˜æ”¾è¿”å›žå€¼å¤§å°åˆ—è¡¨ï¼Œè¿™ä¸ªå¤§å°æŒ‡çš„æ˜¯å­—èŠ‚æµæ•°æ®çš„å¤§å°ï¼Œå¦‚æžœæŽ¥æ”¶çš„æ˜¯å­—ç¬¦ä¸²æ•°æ®çš„è¯ï¼Œå°±ä¸ç”¨ç®¡*/
+	string m_sScript; /*å­˜æ”¾luaè„šæœ¬å­—ç¬¦ä¸²*/
+	bool m_bLoad; /*è¡¨ç¤ºæ˜¯å¦å·²ç»åŠ è½½äº†è„šæœ¬å­—ç¬¦ä¸²*/
 };

@@ -1,4 +1,4 @@
-#include "rlua.h"
+ï»¿#include "rlua.h"
 #include "luarnr/LuaRnr_imp.h"
 #include "io/ITextFileReader.hpp"
 
@@ -6,7 +6,7 @@ LuaRnr_imp::LuaRnr_imp(const char* luaScript)
 {
 	initOnce();
 	saveScript(luaScript);
-	resetLuaRunner(); //³õÊ¼»¯luaÔËĞĞÆ÷
+	resetLuaRunner(); //åˆå§‹åŒ–luaè¿è¡Œå™¨
 }
 
 LuaRnr_imp::LuaRnr_imp(ITextFileReader* reader, const char* luafilePath)
@@ -14,14 +14,14 @@ LuaRnr_imp::LuaRnr_imp(ITextFileReader* reader, const char* luafilePath)
 	initOnce();
 	if (reader != nullptr) {
 		if (reader->readAll(luafilePath) == EXIT_SUCCESS) {
-			//Èç¹û·µ»ØEXIT_SUCCESSµÄ»°£¬bufferÒ»¶¨²»ÊÇNULL
-			//µ«ÊÇ¶ÁÈ¡µ½µÄ½Å±¾ÊÇ·ñÓĞĞ§£¬»á²»»á±ÀÀ£¾ÍÖ»ÄÜÔÚ½Å±¾ÖĞ½øĞĞ¿ØÖÆ
+			//å¦‚æœè¿”å›EXIT_SUCCESSçš„è¯ï¼Œbufferä¸€å®šä¸æ˜¯NULL
+			//ä½†æ˜¯è¯»å–åˆ°çš„è„šæœ¬æ˜¯å¦æœ‰æ•ˆï¼Œä¼šä¸ä¼šå´©æºƒå°±åªèƒ½åœ¨è„šæœ¬ä¸­è¿›è¡Œæ§åˆ¶
 			const char* luaScript = reader->getData(); 
-			//ÕâÀï»ñÈ¡µ½µÄdata´æ´¢ÔÚreaderÖĞµÄ³ÉÔ±ÖĞ£¬ÔÚreaderµÄÎö¹¹º¯ÊıÖĞÒÑ¾­»ØÊÕÁË¿Õ¼ä£¬ËùÒÔ²»ĞèÒªÊÖ¶¯»ØÊÕ
-			saveScript(luaScript); //±£´æ½Å±¾×Ö·û´®£¬×öÒ»·İ¿½±´
+			//è¿™é‡Œè·å–åˆ°çš„dataå­˜å‚¨åœ¨readerä¸­çš„æˆå‘˜ä¸­ï¼Œåœ¨readerçš„ææ„å‡½æ•°ä¸­å·²ç»å›æ”¶äº†ç©ºé—´ï¼Œæ‰€ä»¥ä¸éœ€è¦æ‰‹åŠ¨å›æ”¶
+			saveScript(luaScript); //ä¿å­˜è„šæœ¬å­—ç¬¦ä¸²ï¼Œåšä¸€ä»½æ‹·è´
 		}
-		//ÔÚ¶àÏß³ÌÏÂÅÂreaderµÄÊı¾İÓĞÎÊÌâ
-		//reader×îºÃÊÇÒ»¸öÄäÃû¶ÔÏóÖ¸Õë£¬È»ºóÔÚÕâÀï»ØÊÕµô£¬ÕâÑùreaderÖĞµÄbufferÒ²»á»ØÊÕµô
+		//åœ¨å¤šçº¿ç¨‹ä¸‹æ€•readerçš„æ•°æ®æœ‰é—®é¢˜
+		//readeræœ€å¥½æ˜¯ä¸€ä¸ªåŒ¿åå¯¹è±¡æŒ‡é’ˆï¼Œç„¶ååœ¨è¿™é‡Œå›æ”¶æ‰ï¼Œè¿™æ ·readerä¸­çš„bufferä¹Ÿä¼šå›æ”¶æ‰
 		delete reader; 
 	}
 	resetLuaRunner();
@@ -29,9 +29,9 @@ LuaRnr_imp::LuaRnr_imp(ITextFileReader* reader, const char* luafilePath)
 
 LuaRnr_imp::~LuaRnr_imp()
 {
-	clearArgList(); /*Çå¿Õ²ÎÊıÁĞ±í*/
-	clearRetValList(); /*Çå¿Õ·µ»ØÖµÁĞ±í*/
-	clearRetSizeList(); /*Çå¿Õ·µ»ØÖµ´óĞ¡ÁĞ±í*/
+	clearArgList(); /*æ¸…ç©ºå‚æ•°åˆ—è¡¨*/
+	clearRetValList(); /*æ¸…ç©ºè¿”å›å€¼åˆ—è¡¨*/
+	clearRetSizeList(); /*æ¸…ç©ºè¿”å›å€¼å¤§å°åˆ—è¡¨*/
 	m_sScript = "";
 	m_bLoad = false;
 }
@@ -63,7 +63,8 @@ int LuaRnr_imp::run()
 		m_retValList.push_back(retv[i]);
 		m_retSizeList.push_back(rets[i]);
 	}
-	freeArgs(argv); //ÊÍ·ÅÄÚ´æ
+	if(rets != NULL) free(rets);
+	freeArgs(argv); //é‡Šæ”¾å†…å­˜
 	return result;
 }
 
@@ -83,7 +84,7 @@ const char* LuaRnr_imp::getRetvByIdx(size_t idx)
 	if (getRetvListSize() > 0) {
 		size_t rets = m_retSizeList[idx];
 		retv = (char*)malloc(sizeof(char*) * rets);
-		memcpy(retv, m_retValList[idx], rets); //ÎªÁË±£Ö¤°²È«ĞÔ»ñÈ¡Êı¾İÊ±Òª¿½±´Ò»·İÊı¾İ·µ»Ø
+		memcpy(retv, m_retValList[idx], rets); //ä¸ºäº†ä¿è¯å®‰å…¨æ€§è·å–æ•°æ®æ—¶è¦æ‹·è´ä¸€ä»½æ•°æ®è¿”å›
 	}
 	return retv;
 }
@@ -109,16 +110,16 @@ void LuaRnr_imp::initOnce()
 void LuaRnr_imp::initRunner() 
 {
 	m_bLoad = false;
-	clearArgList(); /*Çå¿Õ²ÎÊıÁĞ±í*/
-	clearRetValList(); /*Çå¿Õ·µ»ØÖµÁĞ±í*/
-	clearRetSizeList(); /*Çå¿Õ·µ»ØÖµ´óĞ¡ÁĞ±í*/
+	clearArgList(); /*æ¸…ç©ºå‚æ•°åˆ—è¡¨*/
+	clearRetValList(); /*æ¸…ç©ºè¿”å›å€¼åˆ—è¡¨*/
+	clearRetSizeList(); /*æ¸…ç©ºè¿”å›å€¼å¤§å°åˆ—è¡¨*/
 	string runnername = PROGRAM_NAME;
 	pushArg(runnername);
 }
 
 void LuaRnr_imp::loadScript() 
 {
-	if (!m_bLoad) { //Ò»¶¨ÊÇÔÚinitRunnerÖ®ºóÖ´ĞĞ£¬ÒòÎª½Å±¾Ö»ÄÜ¼ÓÔØÒ»´Î
+	if (!m_bLoad) { //ä¸€å®šæ˜¯åœ¨initRunnerä¹‹åæ‰§è¡Œï¼Œå› ä¸ºè„šæœ¬åªèƒ½åŠ è½½ä¸€æ¬¡
 		pushArg(m_sScript);
 		m_bLoad = true;
 	}
@@ -166,7 +167,7 @@ void LuaRnr_imp::clearRetSizeList()
 	m_retSizeList.clear();
 }
 
-/*******************´òÓ¡ĞÅÏ¢***************************/
+/*******************æ‰“å°ä¿¡æ¯***************************/
 void LuaRnr_imp::printScript()
 {
 	printf("%s\n",m_sScript.c_str());
