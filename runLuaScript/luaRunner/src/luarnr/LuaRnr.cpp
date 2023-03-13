@@ -1,16 +1,34 @@
-﻿#include "LuaRnr.h"
-#include "LuaRnr_imp.h"
+﻿#include "luarnr/LuaRnr.h"
+#include "luarnr/LuaRnr_imp.h"
 
 LuaRnr::LuaRnr(const char* luaScript) {
 	m_pImp = new LuaRnr_imp(luaScript);
 }
+
 LuaRnr::LuaRnr(ITextFileReader* reader, const char* luafilePath)
 {
 	m_pImp = new LuaRnr_imp(reader, luafilePath);
 }
-void LuaRnr::addArg(const char* arg)
+
+LuaRnr::~LuaRnr()
 {
-	m_pImp->addArg(arg);
+	if (m_pImp != nullptr) delete m_pImp;
+}
+
+void LuaRnr::resetLuaRunner()
+{
+	m_pImp->resetLuaRunner();
+}
+
+void LuaRnr::pushArg(const char* arg)
+{
+	string sArg = arg;
+	m_pImp->pushArg(sArg);
+}
+
+bool LuaRnr::ready()
+{
+	return m_pImp->ready();
 }
 
 int LuaRnr::run()
@@ -18,12 +36,46 @@ int LuaRnr::run()
 	return m_pImp->run();
 }
 
-void LuaRnr::printRetv()
+size_t LuaRnr::getArgListSize()
 {
-	m_pImp->printRetv();
+	return m_pImp->getArgListSize();
 }
 
-LuaRnr::~LuaRnr()
+size_t LuaRnr::getRetvListSize()
 {
-	if (m_pImp != nullptr) delete m_pImp;
+	return m_pImp->getRetvListSize();
+}
+
+const char* LuaRnr::getRetvByIdx(size_t idx)
+{
+	return m_pImp->getRetvByIdx(idx);
+}
+
+size_t LuaRnr::getRetvSizeByIdx(size_t idx)
+{
+	return m_pImp->getRetvSizeByIdx(idx);
+}
+
+const char* LuaRnr::getScript()
+{
+	return m_pImp->getScript().c_str();
+}
+
+void LuaRnr::printScript()
+{
+	m_pImp->printScript();
+}
+
+void LuaRnr::printArguments()
+{
+	m_pImp->printArguments();
+}
+
+void LuaRnr::printAllRetvDataInfo()
+{
+	m_pImp->printAllRetvDataInfo();
+}
+void LuaRnr::printAllRetvDataByteArray()
+{
+	m_pImp->printAllRetvDataByteArray();
 }
