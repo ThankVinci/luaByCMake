@@ -185,6 +185,16 @@ void LuaRnr_imp::printArguments()
 	}
 	printf("]\n");
 }
+
+void LuaRnr_imp::printCommand()
+{
+	printf("command:[");
+	for (string& arg:m_argList) {
+		printf("%s ",arg.c_str());
+	}
+	printf("]\n");
+}
+
 void LuaRnr_imp::printAllRetvDataInfo()
 {
 	for (size_t idx = 0; idx < m_retValList.size();idx++) {

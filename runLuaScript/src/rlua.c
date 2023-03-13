@@ -457,7 +457,8 @@ int runLua(int argc, const char** argv, int* retc, char*** retv, unsigned long l
     //执行之后栈顶为true、栈顶第二个元素为脚本的返回值
     result = lua_toboolean(L, -1);  // 获取栈顶的元素，用于检测脚本执行是否成功
     lua_pop(L, 1); //把虚拟栈顶的元素弹出，此时栈顶就是脚本的返回值
-
+    //const char* ccc = lua_tostring(L, -1);
+    //int type = lua_type(L,-1);
     //这里我假设我在脚本中返回的是table类型，如果不是table的话，说明这个脚本我不需要返回值，只需要执行就可以
     int is_table = lua_istable(L, -1);
     if (!is_table || retc == NULL || retv == NULL || rets == NULL) return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -519,7 +520,7 @@ int runLua(int argc, const char** argv, int* retc, char*** retv, unsigned long l
     }
     lua_pop(L, 1); //再次弹出栈顶的子表，此时栈顶变回承载返回值的table
     /***************************************/
-
+    printf("test\n");
     lua_pop(L, 1); //把栈顶的脚本返回值table弹出，此时栈中没有元素了
     lua_close(L); //关闭虚拟栈
     return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;

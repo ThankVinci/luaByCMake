@@ -71,6 +71,11 @@ void LuaRnr::printArguments()
 	m_pImp->printArguments();
 }
 
+void LuaRnr::printCommand()
+{
+	m_pImp->printCommand();
+}
+
 void LuaRnr::printAllRetvDataInfo()
 {
 	m_pImp->printAllRetvDataInfo();

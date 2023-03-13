@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #ifdef LUA_BUILD_AS_DLL
 #ifdef LUARNR_API
@@ -9,8 +9,8 @@
 #endif
 
 #include <stddef.h>
-class LuaRnr_imp; //luaÔËĞĞÆ÷µÄÊµ¼ÊÊµÏÖ
-class ITextFileReader; //³éÏóreader½Ó¿Ú
+class LuaRnr_imp; //luaè¿è¡Œå™¨çš„å®é™…å®ç°
+class ITextFileReader; //æŠ½è±¡readeræ¥å£
 
 class LUARNR_DLL_API  LuaRnr{
 
@@ -20,23 +20,24 @@ public:
 	~LuaRnr();
 
 public:
-	void resetLuaRunner(); /*ÓÃÓÚÖØÖÃluaÔËĞĞÆ÷£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	void pushArg(const char* arg); /*ÓÃÓÚÌí¼ÓluaÔËĞĞ²ÎÊı£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	bool ready(); /*ÓÃÓÚÅĞ¶ÏRunnerÊÇ·ñÒÑ¾­×¼±¸ºÃÔËĞĞ£¬Ö»ÓĞ·µ»ØtrueÊ±²Å¿ÉÒÔµ÷ÓÃrun*/
-	int run(); /*ÓÃÓÚÔËĞĞlua½Å±¾£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
+	void resetLuaRunner(); /*ç”¨äºé‡ç½®luaè¿è¡Œå™¨ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	void pushArg(const char* arg); /*ç”¨äºæ·»åŠ luaè¿è¡Œå‚æ•°ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	bool ready(); /*ç”¨äºåˆ¤æ–­Runneræ˜¯å¦å·²ç»å‡†å¤‡å¥½è¿è¡Œï¼Œåªæœ‰è¿”å›trueæ—¶æ‰å¯ä»¥è°ƒç”¨run*/
+	int run(); /*ç”¨äºè¿è¡Œluaè„šæœ¬ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
 
 public:
-	size_t getArgListSize(); /*ÓÃÓÚ»ñÈ¡lua½Å±¾Ö´ĞĞµÄ²ÎÊıÊıÁ¿£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	size_t getRetvListSize(); /*ÓÃÓÚ»ñÈ¡lua½Å±¾Ö´ĞĞµÄ·µ»ØÖµÊıÁ¿£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	const char* getRetvByIdx(size_t idx); /*ÓÃÓÚ»ñÈ¡Ä³¸öÏÂ±êµÄ·µ»ØÖµ£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	size_t getRetvSizeByIdx(size_t idx); /*ÓÃÓÚ»ñÈ¡Ä³¸öÏÂ±êµÄ·µ»ØÖµµÄ×Ö½ÚÁ÷Êı¾İ´óĞ¡£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
-	const char* getScript(); /*ÓÃÓÚ»ñÈ¡¼ÓÔØµ½RunnerÖĞµÄ½Å±¾£¬¿ÉÔÚÍâ²¿µ÷ÓÃ*/
+	size_t getArgListSize(); /*ç”¨äºè·å–luaè„šæœ¬æ‰§è¡Œçš„å‚æ•°æ•°é‡ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	size_t getRetvListSize(); /*ç”¨äºè·å–luaè„šæœ¬æ‰§è¡Œçš„è¿”å›å€¼æ•°é‡ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	const char* getRetvByIdx(size_t idx); /*ç”¨äºè·å–æŸä¸ªä¸‹æ ‡çš„è¿”å›å€¼ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	size_t getRetvSizeByIdx(size_t idx); /*ç”¨äºè·å–æŸä¸ªä¸‹æ ‡çš„è¿”å›å€¼çš„å­—èŠ‚æµæ•°æ®å¤§å°ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
+	const char* getScript(); /*ç”¨äºè·å–åŠ è½½åˆ°Runnerä¸­çš„è„šæœ¬ï¼Œå¯åœ¨å¤–éƒ¨è°ƒç”¨*/
 
 public:
-	void printScript(); /*´òÓ¡³ö½Å±¾ÄÚÈİ*/
-	void printArguments(); /*´òÓ¡³ö²ÎÊıÁĞ±í*/
-	void printAllRetvDataInfo(); /*´òÓ¡³öËùÓĞ·µ»ØÖµµÄĞÅÏ¢£¬°üÀ¨Êı¾İ´óĞ¡ºÍÊı¾İ£¨ÒÔ×Ö·û´®µÄĞÎÊ½´òÓ¡³öÀ´£©*/
-	void printAllRetvDataByteArray(); /*´òÓ¡³öËùÓĞ·µ»ØÖµµÄĞÅÏ¢£¬°üÀ¨Êı¾İ´óĞ¡ºÍÊı¾İ£¨ÒÔ×Ö½ÚÊı×éµÄĞÎÊ½´òÓ¡³öÀ´£©*/
+	void printScript(); /*æ‰“å°å‡ºè„šæœ¬å†…å®¹*/
+	void printArguments(); /*æ‰“å°å‡ºå‚æ•°åˆ—è¡¨*/
+	void printCommand(); /*æ‰“å°å‡ºå®Œæ•´å‘½ä»¤*/
+	void printAllRetvDataInfo(); /*æ‰“å°å‡ºæ‰€æœ‰è¿”å›å€¼çš„ä¿¡æ¯ï¼ŒåŒ…æ‹¬æ•°æ®å¤§å°å’Œæ•°æ®ï¼ˆä»¥å­—ç¬¦ä¸²çš„å½¢å¼æ‰“å°å‡ºæ¥ï¼‰*/
+	void printAllRetvDataByteArray(); /*æ‰“å°å‡ºæ‰€æœ‰è¿”å›å€¼çš„ä¿¡æ¯ï¼ŒåŒ…æ‹¬æ•°æ®å¤§å°å’Œæ•°æ®ï¼ˆä»¥å­—èŠ‚æ•°ç»„çš„å½¢å¼æ‰“å°å‡ºæ¥ï¼‰*/
 
 private:
 	LuaRnr_imp* m_pImp;

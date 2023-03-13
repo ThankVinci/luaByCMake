@@ -43,6 +43,7 @@ private:
 public:
 	void printScript(); /*打印出脚本内容*/
 	void printArguments(); /*打印出参数列表*/
+	void printCommand(); /*打印出完整命令*/
 	void printAllRetvDataInfo(); /*打印出所有返回值的信息，包括数据大小和数据（以字符串的形式打印出来）*/
 	void printAllRetvDataByteArray(); /*打印出所有返回值的信息，包括数据大小和数据（以字节数组的形式打印出来）*/
 
