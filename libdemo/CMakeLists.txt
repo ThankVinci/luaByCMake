@@ -1,4 +1,4 @@
-#1.设置模块名称##########################
+﻿#1.设置模块名称##########################
 #这里提供了懒人一键式构建，一般来说只需要修改模块名称即可，但还是要发挥一下主观能动性
 #需要修改的地方可能也就目标链接和预定义之类的
 set(MODULE_NAME_WITH_MODULE "demolib_module")
@@ -17,6 +17,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src MODULE_SRC_FILES)
 #############################################
 
 #4.添加生成库目标############################
+set(CMAKE_DEBUG_POSTFIX "") #DEBUG清除后缀
 #注：由于lua对模块名称的限制以及一些编译器编译库文件名的会加上lib的缘故，所以要删除前缀
 add_library(${MODULE_NAME_WITH_MODULE} MODULE ${MODULE_SRC_FILES}) #添加生成动态库目标
 set_target_properties(${MODULE_NAME_WITH_MODULE} PROPERTIES OUTPUT_NAME ${MODULE_NAME})
@@ -34,6 +35,7 @@ install(TARGETS ${MODULE_NAME_WITH_MODULE}
 )#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
 #补充：当生成的动态库为MODULE时，会放入到LIBRARY中，所以注释了RUNTIME一行
 if(CMAKE_BUILD_TYPE STREQUAL "Release") #只有RELEASE模式下会安装到codelib目录下
+
 	if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 		#把动态库安装到我的codelib目录下
 		if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
