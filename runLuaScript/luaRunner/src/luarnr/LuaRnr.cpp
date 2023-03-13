@@ -5,6 +5,7 @@ LuaRnr::LuaRnr(const char* luaScript) {
 	m_pImp = new LuaRnr_imp(luaScript);
 }
 
+
 LuaRnr::LuaRnr(ITextFileReader* reader, const char* luafilePath)
 {
 	m_pImp = new LuaRnr_imp(reader, luafilePath);
