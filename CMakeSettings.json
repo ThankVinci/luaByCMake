@@ -9,14 +9,7 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "ctestCommandArgs": "",
-      "variables": [
-        {
-          "name": "CMAKE_BUILD_TYPE",
-          "value": "Debug",
-          "type": "STRING"
-        }
-      ]
+      "ctestCommandArgs": ""
     },
     {
       "name": "x64-Release",
@@ -27,89 +20,29 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "variables": [
-        {
-          "name": "CMAKE_BUILD_TYPE",
-          "value": "Release",
-          "type": "STRING"
-        }
-      ]
+      "inheritEnvironments": [ "msvc_x64_x64" ]
     },
     {
-      "name": "Mingw64-Release",
+      "name": "x64-Clang-Release",
       "generator": "Ninja",
       "configurationType": "RelWithDebInfo",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "mingw_64" ],
-      "environments": [
-        {
-          "MINGW64_ROOT": "C:/Path/MinGW/winlibs-x86_64-posix-seh-gcc-12.2.0-llvm-15.0.6-mingw-w64ucrt-10.0.0-r3",
-          "BIN_ROOT": "${env.MINGW64_ROOT}/bin",
-          "FLAVOR": "x86_64-w64-mingw32",
-          "TOOLSET_VERSION": "9.1.0",
-          "PATH": "${env.MINGW64_ROOT}/bin;${env.MINGW64_ROOT}/../usr/local/bin;${env.MINGW64_ROOT}/../usr/bin;${env.MINGW64_ROOT}/../bin;${env.PATH}",
-          "INCLUDE": "${env.INCLUDE};${env.MINGW64_ROOT}/include/c++/${env.TOOLSET_VERSION};${env.MINGW64_ROOT}/include/c++/${env.TOOLSET_VERSION}/tr1;${env.MINGW64_ROOT}/include/c++/${env.TOOLSET_VERSION}/${env.FLAVOR}",
-          "environment": "mingw_64"
-        }
-      ],
-      "variables": [
-        {
-          "name": "CMAKE_C_COMPILER",
-          "value": "${env.BIN_ROOT}/gcc.exe",
-          "type": "STRING"
-        },
-        {
-          "name": "CMAKE_CXX_COMPILER",
-          "value": "${env.BIN_ROOT}/g++.exe",
-          "type": "STRING"
-        },
-        {
-          "name": "CMAKE_BUILD_TYPE",
-          "value": "Release",
-          "type": "STRING"
-        }
-      ],
-      "intelliSenseMode": "linux-gcc-x64"
+      "inheritEnvironments": [ "clang_cl_x64_x64" ]
     },
     {
-      "name": "Mingw64-Debug",
+      "name": "x64-Clang-Debug",
       "generator": "Ninja",
       "configurationType": "Debug",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "mingw_64" ],
-      "environments": [
-        {
-          "MINGW64_ROOT": "C:/Path/MinGW/winlibs-x86_64-posix-seh-gcc-12.2.0-llvm-15.0.6-mingw-w64ucrt-10.0.0-r3",
-          "BIN_ROOT": "${env.MINGW64_ROOT}/bin",
-          "FLAVOR": "x86_64-w64-mingw32",
-          "TOOLSET_VERSION": "9.1.0",
-          "PATH": "${env.MINGW64_ROOT}/bin;${env.MINGW64_ROOT}/../usr/local/bin;${env.MINGW64_ROOT}/../usr/bin;${env.MINGW64_ROOT}/../bin;${env.PATH}",
-          "INCLUDE": "${env.INCLUDE};${env.MINGW64_ROOT}/include/c++/${env.TOOLSET_VERSION};${env.MINGW64_ROOT}/include/c++/${env.TOOLSET_VERSION}/tr1;${env.MINGW64_ROOT}/include/c++/${env.TOOLSET_VERSION}/${env.FLAVOR}",
-          "environment": "mingw_64"
-        }
-      ],
-      "variables": [
-        {
-          "name": "CMAKE_C_COMPILER",
-          "value": "${env.BIN_ROOT}/gcc.exe",
-          "type": "STRING"
-        },
-        {
-          "name": "CMAKE_CXX_COMPILER",
-          "value": "${env.BIN_ROOT}/g++.exe",
-          "type": "STRING"
-        }
-      ],
-      "intelliSenseMode": "linux-gcc-x64"
+      "inheritEnvironments": [ "clang_cl_x64_x64" ]
     }
   ]
 }

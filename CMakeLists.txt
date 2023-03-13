@@ -18,8 +18,6 @@ set(LIBLUA_SHARED liblua_shared)
 set(LUAC_EXEC luac_exec)
 set(LUA_EXEC lua_exec)
 set(LUA_NAME lua)
-
-set(CMAKE_DEBUG_POSTFIX "d")
 #############################################
 
 #2.信息打印处################################
@@ -37,27 +35,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置静�
 #############################################
 
 #4.设置安装目录的根目录######################
-set(INSTALL_PATH_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/installed/)
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	set(CODELIB_INSTALL_PATH "C:/Path/Codelib") #Windows下先试行，设置一个代码和库的安装目录
-	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-		set(INSTALL_PATH ${INSTALL_PATH_ROOT}/MinGW)
-	elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-		set(INSTALL_PATH ${INSTALL_PATH_ROOT}/MSVC)
-	endif()
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set(INSTALL_PATH ${INSTALL_PATH_ROOT}/LinuxGNU)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-	set(INSTALL_PATH ${INSTALL_PATH_ROOT}/AppleClang)
-endif()
-message(STATUS ${CMAKE_BUILD_TYPE})
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_Debug/)
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-	set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_Release/)
-else()
-	set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_Other/)
-endif()
+set(INSTALL_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/installed)
 #############################################
 
 #5.设置包含目录、库目录和参加编译源文件######
@@ -86,9 +64,9 @@ target_link_libraries(${LUA_EXEC} ${LIBLUA_SHARED} ) #lua链接动态库
 
 #9.生成文件后进行安装的安装目录##############
 install(TARGETS ${LUA_EXEC} ${LUAC_EXEC} ${LIBLUA_SHARED} ${LIBLUA_STATIC} 
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin/
+	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/
+	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib/
 )
 #############################################
 

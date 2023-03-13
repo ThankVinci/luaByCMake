@@ -18,7 +18,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置静�
 #############################################
 
 #3.设置包含目录、库目录和参加编译源文件######
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include  ) #设置头文件所在目录
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
+					${CMAKE_CURRENT_SOURCE_DIR}/include/io   
+					${CMAKE_CURRENT_SOURCE_DIR}/include/luarnr ) #设置头文件所在目录
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/io IO_SRC )
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/luarnr LUARNR_CLASS_SRC )
@@ -58,32 +60,10 @@ endif()
 
 #7.生成文件后进行安装########################
 install(TARGETS ${DEMO_EXEC} ${LUARNR_TARGET}
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION ${INSTALL_DIRECTORY}/bin
+	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib
+	ARCHIVE DESTINATION ${INSTALL_DIRECTORY}/lib
 )
-#生成后本库需要安装到指定的目录作为外部库使用
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	#把动态库安装到我的codelib目录下
-	install(TARGETS ${LUARNR_TARGET}
-		RUNTIME DESTINATION ${CODELIB_INSTALL_PATH}/lib
-		LIBRARY DESTINATION ${CODELIB_INSTALL_PATH}/lib
-		ARCHIVE DESTINATION ${CODELIB_INSTALL_PATH}/lib)
-	#把头文件安装到Codelib目录下
-	file(GLOB IO_CLASS_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/io/*" )
-	file(GLOB LUARNR_CLASS_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/luarnr/*" )
-
-	install(FILES ${IO_CLASS_HEADERS} DESTINATION ${CODELIB_INSTALL_PATH}/include_tmp/io )
-	install(FILES ${LUARNR_CLASS_HEADERS} DESTINATION ${CODELIB_INSTALL_PATH}/include_tmp/luarnr )
-
-	#把源文件也安装到Codelib目录下
-	file(GLOB IO_CLASS_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/io/*" )
-	file(GLOB LUARNR_CLASS_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/luarnr/*" )
-
-	install(FILES ${IO_CLASS_SRCS} DESTINATION ${CODELIB_INSTALL_PATH}/src_tmp/io )
-	install(FILES ${LUARNR_CLASS_SRCS} DESTINATION ${CODELIB_INSTALL_PATH}/src_tmp/luarnr )
-endif()
-
 #############################################
 
 #8.安装脚本和json############################
