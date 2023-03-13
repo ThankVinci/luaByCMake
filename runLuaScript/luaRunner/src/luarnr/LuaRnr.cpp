@@ -1,4 +1,4 @@
-﻿#include "luarnr/LuaRnr.h"
+#include "luarnr/LuaRnr.h"
 #include "luarnr/LuaRnr_imp.h"
 
 LuaRnr::LuaRnr(const char* luaScript) {

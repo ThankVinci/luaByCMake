@@ -20,6 +20,10 @@ set(LUA_EXEC lua_exec)
 set(LUA_NAME lua)
 
 set(CMAKE_DEBUG_POSTFIX "d")
+
+if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+	add_compile_options(/utf-8)
+endif()
 #############################################
 
 #2.信息打印处################################

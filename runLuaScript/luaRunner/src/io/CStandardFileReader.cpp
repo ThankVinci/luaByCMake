@@ -1,4 +1,4 @@
-﻿#include "io/CStandardFileReader.h"
+#include "io/CStandardFileReader.h"
 
 CStandardFileReader::CStandardFileReader() {
 	pf = NULL;

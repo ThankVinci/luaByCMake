@@ -1,4 +1,4 @@
-﻿#include <stddef.h>
+#include <stddef.h>
 #include <string>
 #include <vector>
 using std::string;

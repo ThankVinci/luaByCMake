@@ -1,4 +1,4 @@
-﻿#include "demo.h"
+#include "demo.h"
 
 static int demo_hello(lua_State* L) {
 	printf("hello,demo\n\r");

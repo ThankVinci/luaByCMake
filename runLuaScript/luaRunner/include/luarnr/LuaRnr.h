@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifdef LUA_BUILD_AS_DLL
 #ifdef LUARNR_API

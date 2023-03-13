@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "ITextFileReader.hpp"
 
 class CStandardFileReader :public ITextFileReader {

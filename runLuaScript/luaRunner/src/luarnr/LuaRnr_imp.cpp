@@ -1,4 +1,4 @@
-﻿#include "rlua.h"
+#include "rlua.h"
 #include "luarnr/LuaRnr_imp.h"
 #include "io/ITextFileReader.hpp"
 #include <stdlib.h>
