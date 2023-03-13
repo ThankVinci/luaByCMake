@@ -18,5 +18,6 @@ int main()
     luarnr->printAllRetvDataInfo();
     luarnr->printAllRetvDataByteArray();
     printf("script:%s\n", luarnr->getScript());
+    delete luarnr;
     return 0;
 }
