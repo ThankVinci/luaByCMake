@@ -1,4 +1,4 @@
-#1.设置模块名称##########################
+﻿#1.设置模块名称##########################
 #这里提供了懒人一键式构建，一般来说只需要修改模块名称即可，但还是要发挥一下主观能动性
 #需要修改的地方可能也就目标链接和预定义之类的
 set(MODULE_NAME_WITH_MODULE "cjson_module")
@@ -51,6 +51,7 @@ set(MODULE_SRC_FILES ${SRC_DIR}/lua_cjson.c ${SRC_DIR}/strbuf.c ${FPCONV_SOURCES
 #############################################
 
 #4.添加生成库目标############################
+set(CMAKE_DEBUG_POSTFIX "") #DEBUG清除后缀
 #注：由于lua对模块名称的限制以及一些编译器编译库文件名的会加上lib的缘故，所以要删除前缀
 add_library(${MODULE_NAME_WITH_MODULE} MODULE ${MODULE_SRC_FILES}) #添加生成动态库目标
 set_target_properties(${MODULE_NAME_WITH_MODULE} PROPERTIES OUTPUT_NAME ${MODULE_NAME})
@@ -60,12 +61,22 @@ else()
 endif()
 #############################################
 
-#5.生成文件后进行安装的安装目录##############
+#5.生成文件后进行安装########################
 #lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
 install(TARGETS ${MODULE_NAME_WITH_MODULE} 
 	#RUNTIME DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
-	LIBRARY DESTINATION ${INSTALL_DIRECTORY}/lib/lua/${LUA_VERSION}
+	LIBRARY DESTINATION lib/lua/${LUA_VERSION}
 )#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
+#补充：当生成的动态库为MODULE时，会放入到LIBRARY中，所以注释了RUNTIME一行
+if(CMAKE_BUILD_TYPE STREQUAL "Release") #只有RELEASE模式下会安装到codelib目录下
+	if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+		#把动态库安装到我的codelib目录下
+		if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+			install(TARGETS ${MODULE_NAME_WITH_MODULE}
+				LIBRARY DESTINATION ${CODELIB_INSTALL_PATH}/luamodules/lib/${LUA_VERSION} )
+		endif()
+	endif()
+endif()
 #############################################
 
 #6.目标链接设置##############################

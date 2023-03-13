@@ -431,56 +431,97 @@ static int runLuaScript(lua_State* L) {
     const char* luaScript = argv[1];
 
     //加载字符串作为lua脚本然后进行调用
-    luaL_loadstring(L, luaScript);
-    docall(L, 0, 1);
-    //返回值true入栈
-    lua_pushboolean(L, 1);  /* signal no errors */
+    luaL_loadstring(L, luaScript); 
+    docall(L, 0, 1); //docall第三个参数告知运行脚本之后会得到一个返回值，这个返回值会入栈
+    lua_pushboolean(L, 1);  //返回值true入栈
     return 2;
 }
 #include "rlua.h"
 
-int runLua(int argc, char** argv, int* retc, char*** retv) {
-    int status, result;
-    lua_State* L = luaL_newstate();  /* create state */
+int runLua(int argc, const char** argv, int* retc, char*** retv, unsigned long long** rets) {
+    int status, result, idx;
+    lua_State* L = luaL_newstate();  // 创建空栈
     if (L == NULL) {
         l_message(argv[0], "cannot create state: not enough memory");
         return EXIT_FAILURE;
     }
     //函数、参数入栈
-    lua_pushcfunction(L, &runLuaScript);  /* to call 'pmain' in protected mode */
-    lua_pushinteger(L, argc);  /* 1st argument */
-    lua_pushlightuserdata(L, argv); /* 2nd argument */
+    lua_pushcfunction(L, &runLuaScript);  //运行脚本的入口函数压入栈
+    lua_pushinteger(L, argc); // 往栈中压入第一个参数，表示要执行脚本传入的参数数量
+    lua_pushlightuserdata(L, argv); // 往栈中压入第二个参数，表示要执行脚本传入的参数列表
+    //此时栈底为函数，往上依次是参数数量和参数列表
     //调用函数并返回结果
-    status = docall(L, 2, 2);  /* do the call */
-    result = lua_toboolean(L, -1);  /* get result */
-    lua_pop(L, 1); //把虚拟栈顶的返回值弹出
-
-    //此时栈顶就是lua脚本的返回值，这里我假设我返回的是table类型
+    status = docall(L, 2, 2);
+    //docall第二个参数表示调用函数传入的参数数量，传入2就表示，从栈顶往下第三个元素表示函数，
+    //然后传入栈顶往下两个元素作为参数，第三个参数就表示虚拟栈中的返回值有2个
+    //执行之后栈顶为true、栈顶第二个元素为脚本的返回值
+    result = lua_toboolean(L, -1);  // 获取栈顶的元素，用于检测脚本执行是否成功
+    lua_pop(L, 1); //把虚拟栈顶的元素弹出，此时栈顶就是脚本的返回值
+    //const char* ccc = lua_tostring(L, -1);
+    //int type = lua_type(L,-1);
+    //这里我假设我在脚本中返回的是table类型，如果不是table的话，说明这个脚本我不需要返回值，只需要执行就可以
     int is_table = lua_istable(L, -1);
-    if (!is_table || retc == NULL || retv == NULL ) return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;
+    if (!is_table || retc == NULL || retv == NULL || rets == NULL) return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;
 
-    //获取处于栈顶的表的大小
-    //int table_length = lua_rawlen(L, -1);
-    //const char* typename = luaL_typename(L, -1);
+    //运行到这里，虚拟栈中只有一个元素，是脚本的返回值
+    //以下代码用于处理从脚本中的返回值
 
+    /*获取key为retc的数值 表示返回值的数量 */
     lua_pushstring(L, "retc"); //此时栈顶变成了压入的字符串key
     lua_rawget(L, -2); //执行完这一行，原先栈顶代表key的字符串弹出，从表中获取到的value压到栈顶（整数数据）
+    int toptype = lua_type(L, -1); 
+    if (toptype == LUA_TNIL) {
+        //获得栈顶的元素类型，为0就是nil，也就是说，当rawget获取不到key的value的时候，栈顶就会压入一个nil，但是不会影响到正常的执行，因为如果是nil的话，retc就会得到0，下面的操作自然就无效了。
+    }
     *retc = (int)lua_tointeger(L, -1);
     lua_pop(L, 1); //弹出栈顶，此时栈顶变回承载返回值的table
-
-    lua_pushstring(L, "retv"); //此时栈顶变成了我压入的字符串key
+    /***************************************/
+    //当retc为0时，这里的操作就无效了
+    /*获取key为rets的数值 表示返回值的元素大小 */
+    lua_pushstring(L, "rets"); //此时栈顶变成了我压入的字符串key
     lua_rawget(L, -2); //执行完这一行，原先栈顶代表key的字符串弹出，从表中获取到的value压到栈顶（表数据）
-    *retv = (char**)malloc(sizeof(char*) * (*retc));
-    if (*retv == NULL) *retc = 0;
-    for (int i = 0; i < *retc;i++) {
-        lua_rawgeti(L, -1, (lua_Integer)i + 1); //从子表中获取数据压到栈顶
-        (*retv)[i] = lua_tostring(L, -1); //获取栈顶数据
+    toptype = lua_type(L, -1);
+    if (toptype == LUA_TNIL) {
+        //当rawget获取不到key的value的时候，栈顶就会压入一个nil，这时栈顶肯定不是一个table，所以设置retc为0，这样下面的操作就无效了
+        *retc = 0;
+        *rets = NULL;
+    }
+    else {
+        *rets = (unsigned long long*)malloc(sizeof(unsigned long long) * (*retc));
+    }
+    for (idx = 0; idx < *retc; idx++) {
+        lua_rawgeti(L, -1, (lua_Integer)idx + 1); //从子表中获取数据压到栈顶
+        (*rets)[idx] = lua_tounsigned(L, -1); //获取栈顶数据
         lua_pop(L, 1); //弹出栈顶，此时栈顶变回返回值中的子表
     }
-    lua_pop(L, 2); //弹出栈顶的数据以及下面承载返回值的table
-    
-    //int num = lua_gettop(L);
-
+    lua_pop(L, 1); //再次弹出栈顶的子表(或者是nil)，此时栈顶变回承载返回值的table
+    /*******************************************/
+    //当retc为0时，这里的操作就无效了
+    /*获取key为retv的数值 表示返回值的列表 */
+    lua_pushstring(L, "retv"); //此时栈顶变成了我压入的字符串key
+    lua_rawget(L, -2); //执行完这一行，原先栈顶代表key的字符串弹出，从表中获取到的value压到栈顶（表数据）
+    toptype = lua_type(L, -1);
+    if (toptype == LUA_TNIL) {
+        //当rawget获取不到key的value的时候，栈顶就会压入一个nil，这时栈顶肯定不是一个table，所以设置retc为0，这样下面的操作就无效了
+        *retc = 0;
+        *retv = NULL;
+    }
+    else {
+        *retv = (char**)malloc(sizeof(char*) * (*retc));
+    }
+    for (idx = 0; idx < *retc; idx++) {
+        lua_rawgeti(L, -1, (lua_Integer)idx + 1); //从子表中获取数据压到栈顶
+        //由于不确定字符串的指针什么时候会被回收，在MSVC_DEBUG下确定内存是会被回收的，所以先进行拷贝
+        char* buff = (char*)malloc(sizeof(char) * ((*rets)[idx]));
+        char* src = lua_tostring(L, -1);
+        memcpy(buff,src, (*rets)[idx]);
+        (*retv)[idx] = buff; //获取栈顶数据
+        lua_pop(L, 1); //弹出栈顶，此时栈顶变回返回值中的子表
+    }
+    lua_pop(L, 1); //再次弹出栈顶的子表，此时栈顶变回承载返回值的table
+    /***************************************/
+    printf("test\n");
+    lua_pop(L, 1); //把栈顶的脚本返回值table弹出，此时栈中没有元素了
     lua_close(L); //关闭虚拟栈
     return (result && status == LUA_OK) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
