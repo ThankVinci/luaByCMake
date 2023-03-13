@@ -1,14 +1,14 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include "luarnr/LuaRnr.h"
 #include "io/CStandardFileReader.h"
 
-int main()
+int main(int argc,char** argv)
 {
-    LuaRnr* luarnr = new LuaRnr(
-        new CStandardFileReader, 
-        "C:\\Path\\Codelib\\luamodules\\script\\main.lua");
+    const char* path = "C:\\Path\\Codelib\\luamodules\\script\\main.lua";
+    if (argc > 1) path = argv[1];
+    LuaRnr* luarnr = new LuaRnr(new CStandardFileReader, path);
     //LuaRnr* luarnr = new LuaRnr(" ");
     luarnr->pushArg("C:\\Path\\Codelib\\test\\entry.json");
     printf("argsize:%zd\n", luarnr->getArgListSize()); //打印传入脚本的参数数量
