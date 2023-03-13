@@ -1,4 +1,4 @@
-﻿--用于进行lua调用的demo脚本
+--用于进行lua调用的demo脚本
 --[[
 local cjson_module = require "cjson"
 local cjson_codec = cjson_module.new()
@@ -12,8 +12,8 @@ print(jsonobj['title'])
 print(arg[1])
 print(arg[2])
 
-local retv1 = "返回第一个接口\0";
-local retv2 = "返回第二个接口\0";
+local retv1 = "返回第一个接口\0"
+local retv2 = "返回第二个接口\0"
 
 local res = {
 	retc = 2,
