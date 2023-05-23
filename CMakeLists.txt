@@ -9,7 +9,7 @@ cmake_minimum_required (VERSION 3.12)
 
 #1.设置项目名、版本信息、项目相关变量########
 project ("luaByCMake")
-set(LUA_VERSION 5.4) #lua版本号，根据源码的版本进行更改
+set(LUA_VERSION 5.4.6) #lua版本号，根据源码的版本进行更改
 set(LBC_VERSION 1.0) #luaByCMake版本号
 
 #项目生成目标的变量
