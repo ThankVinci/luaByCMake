@@ -80,7 +80,19 @@ endif()
 #############################################
 
 #6.目标链接设置##############################
-target_link_libraries(${MODULE_NAME_WITH_MODULE} ${LIBLUA_SHARED})
+set(MODULE_LINK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/ )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		#set(MODULE_LINK_LIBS ${MODULE_LINK_PATH}/libxxx.dll.a ) 可能某个lua模块需要依赖某个C库
+	elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+		#set(MODULE_LINK_LIBS )
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+endif()
+
+target_link_libraries(${MODULE_NAME_WITH_MODULE} ${LIBLUA_SHARED} ${MODULE_LINK_LIBS} )
 #############################################
 #############################################
 #		以下的内容就属于需要经常改的了		#

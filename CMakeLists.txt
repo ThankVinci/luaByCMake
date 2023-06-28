@@ -183,4 +183,5 @@ endif()
 add_subdirectory(runLuaScript )
 add_subdirectory(libdemo )
 add_subdirectory(lua-cjson-general ) 
+add_subdirectory(lua-iconv-module ) 
 #############################################
