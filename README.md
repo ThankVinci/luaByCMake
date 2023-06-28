@@ -1,5 +1,5 @@
 # luaByCMake
-基于lua最新5.4.4版本创建的luaCMake项目，可直接编译出lua、luac、动态库与静态库。
+基于lua最新5.4.6版本创建的luaCMake项目，可直接编译出lua、luac、动态库与静态库。
 
 要自己尝试构建过程可以参考lua源码中的Makefile文件，其中除了lua.c和luac.c外的源文件用于产生动态库和静态库，lua.c链接静态库产生lua二进制文件，luac.c链接静态库产生luac二进制文件。
 
