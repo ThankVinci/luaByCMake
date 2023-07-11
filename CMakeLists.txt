@@ -187,4 +187,7 @@ endif()
 add_subdirectory(libdemo )
 add_subdirectory(lua-cjson-general ) 
 add_subdirectory(lua-iconv-module ) 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows") ##只有Windows需要这个模块
+	add_subdirectory(lua-exforwin-module )
+endif()
 #############################################

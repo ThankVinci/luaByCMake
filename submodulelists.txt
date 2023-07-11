@@ -1,2 +1,4 @@
 libdemo
 lua-cjson-general
+lua-iconv-module
+lua-exforwin-module
