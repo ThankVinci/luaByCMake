@@ -183,7 +183,7 @@ endif()
 #############################################
 
 #13.添加生成子项目目录#######################
-add_subdirectory(runLuaScript )
+#add_subdirectory(runLuaScript ) #正在废弃lua运行器
 add_subdirectory(libdemo )
 add_subdirectory(lua-cjson-general ) 
 add_subdirectory(lua-iconv-module ) 
