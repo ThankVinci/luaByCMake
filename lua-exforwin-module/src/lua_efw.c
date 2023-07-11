@@ -9,6 +9,7 @@
 #include <wchar.h>
 #include <io.h>
 #include <fcntl.h>
+#include <windows.h>
 
 #if !defined(l_wsystem) //模仿
 #if defined(LUA_USE_IOS)
@@ -21,10 +22,13 @@
 
 static int os_execute(lua_State *L) {
   //_setmode(_fileno(stdout), _O_U16TEXT);
-  const char *cmd = luaL_optstring(L, 1, NULL);
+  const char *cmd = luaL_optstring(L, 1, NULL); //获取UTF-8字符串
+  size_t cmdLength = strlen(cmd)+1;
+  wchar_t _wcmd[cmdLength*sizeof(wchar_t)];
+  MultiByteToWideChar(CP_UTF8, 0, cmd, -1, _wcmd, sizeof(_wcmd) / sizeof(wchar_t)); //转为宽字符串即（UTF-16）
   int stat;
   errno = 0;
-  stat = l_wsystem((const wchar_t*)cmd);
+  stat = l_wsystem(_wcmd);
   if (cmd != NULL)
     return luaL_execresult(L, stat);
   else {
