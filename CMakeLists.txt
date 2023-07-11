@@ -10,7 +10,7 @@ cmake_minimum_required (VERSION 3.12)
 #1.设置项目名、版本信息、项目相关变量########
 project ("luaByCMake")
 set(LUA_VERSION 5.4.6) #lua版本号，根据源码的版本进行更改
-set(LBC_VERSION 1.0) #luaByCMake版本号
+set(LBC_VERSION 1.0.1) #luaByCMake版本号
 
 #项目生成目标的变量
 set(LIBLUA_STATIC liblua_static)
@@ -43,7 +43,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib) #设置静�
 #4.设置安装目录的根目录######################
 set(INSTALL_PATH_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/installed/)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	set(CODELIB_INSTALL_PATH "C:/Path/Codelib") #Windows下先试行，设置一个代码和库的安装目录
+	#set(CODELIB_INSTALL_PATH "C:/Path/Codelib") #Windows下先试行，设置一个代码和库的安装目录
+	#取消这个Windows下的代码和库的安装目录
+	
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 		set(INSTALL_PATH ${INSTALL_PATH_ROOT}/MinGW)
 	elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
@@ -54,6 +56,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set(INSTALL_PATH ${INSTALL_PATH_ROOT}/AppleClang)
 endif()
+
 message(STATUS ${CMAKE_BUILD_TYPE})
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_Debug/)

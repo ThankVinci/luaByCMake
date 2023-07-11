@@ -38,9 +38,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release") #只有RELEASE模式下会安装到codel
 
 	if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 		#把动态库安装到我的codelib目录下
-		if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-			install(TARGETS ${MODULE_NAME_WITH_MODULE}
-				LIBRARY DESTINATION ${CODELIB_INSTALL_PATH}/luamodules/lib/${LUA_VERSION} )
+		if(DEFINED CODELIB_INSTALL_PATH)
+			if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+				install(TARGETS ${MODULE_NAME_WITH_MODULE}
+					LIBRARY DESTINATION ${CODELIB_INSTALL_PATH}/luamodules/lib/${LUA_VERSION} )
+			endif()
 		endif()
 	endif()
 endif()
