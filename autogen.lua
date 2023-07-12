@@ -32,16 +32,22 @@ local platforms = {
 	,'ARM'
 	,'ARM64'
 } --平台选项，仅在VS生成器中有效，因此选用其他生成器时，请将下面的构建参数将Arch的'EN'改为false
+
+local build_types = {'Debug','Release'}
+
+
 local generator = '"' .. generators[3] .. '"'
 local platform = platforms[1]
 local build_dir = '"./build"' --cmake会生成在CMakeLists文件同级的目录中
+local build_type = build_types[2]
 
 ------------------------------CMAKE构建参数组装-----------------------
-local build_key_tbl = {'Genor','Arch','BuildDir'}
+local build_key_tbl = {'Genor','Arch','BuildDir','BuildType'}
 local build_params = {
 	['Genor'] = { ['EN']  = true, ['KEY'] = ' -G %s', ['VAL'] = generator  }
 	,['Arch'] = { ['EN'] = false, ['KEY'] = ' -A %s', ['VAL'] = platform }
 	,['BuildDir'] = { ['EN'] = true, ['KEY'] = ' -B %s', ['VAL'] = build_dir }
+	,['BuildType'] = { ['EN'] = true, ['KEY'] = ' -DCMAKE_BUILD_TYPE=%s', ['VAL'] = build_type }
 }
 
 local build_param = Func_GetParamFormat(build_key_tbl,build_params)
