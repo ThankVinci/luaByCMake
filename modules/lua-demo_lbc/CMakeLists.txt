@@ -1,8 +1,8 @@
 #1.设置模块名称##########################
 #这里提供了懒人一键式构建，一般来说只需要修改模块名称即可，但还是要发挥一下主观能动性
 #需要修改的地方可能也就目标链接和预定义之类的
-set(MODULE_NAME_WITH_MODULE "efw_module")
-set(MODULE_NAME "efw")
+set(MODULE_NAME_WITH_MODULE "demo_module")
+set(MODULE_NAME "demo")
 #############################################
 
 #2.设置目标生成目录##########################
