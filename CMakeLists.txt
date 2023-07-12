@@ -71,12 +71,16 @@ set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}${BUILD_TYPE}/${_LUA_VERSION})
 #############################################
 
 #5.设置包含目录、库目录和参加编译源文件######
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include) #设置头文件所在目录
+set(LUA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${LUA_INCLUDE_DIR}) #设置头文件所在目录
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src LIB_SRC_FILES) #设置要生成的静态库的源文件所在目录，从而选中该目录下所有文件
 #这两个文件编译成库的时候要排除
 set(LUA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/lua.c) #编译可执行文件lua的时候需要
 set(LUAC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/luac.c) #编译可执行文件luac的时候需要
 list(REMOVE_ITEM LIB_SRC_FILES  ${LUA_PATH} ${LUAC_PATH}) #从源文件中剔除lua.c和luac.c,注意这里必须传入的是绝对路径
+
+##设置安装的头文件
+set(INSTALL_H_FILES ${LUA_INCLUDE_DIR}/lauxlib.h ${LUA_INCLUDE_DIR}/lua.h ${LUA_INCLUDE_DIR}/lua.hpp ${LUA_INCLUDE_DIR}/luaconf.h ${LUA_INCLUDE_DIR}/lualib.h )
 #############################################
 
 #6.添加生成库目标############################
@@ -100,6 +104,8 @@ install(TARGETS ${LUA_EXEC} ${LUAC_EXEC} ${LIBLUA_SHARED} ${LIBLUA_STATIC}
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
 )
+##安装一些调用库必要的头文件
+install(FILES ${INSTALL_H_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 #############################################
 
 #############################################

@@ -34,8 +34,9 @@ install(TARGETS ${MODULE_NAME_WITH_MODULE}
 	LIBRARY DESTINATION lib/lua/${LUA_VERSION}
 )#这里是因为Windows生成动态库会放到RUNTIME中，所以RUNTIME和LIBRARY都设为该目录
 #补充：当生成的动态库为MODULE时，会放入到LIBRARY中，所以注释了RUNTIME一行
-if(CMAKE_BUILD_TYPE STREQUAL "Release") #只有RELEASE模式下会安装到codelib目录下
 
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release") #只有RELEASE模式下会安装到codelib目录下
 	if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 		#把动态库安装到我的codelib目录下
 		if(DEFINED CODELIB_INSTALL_PATH)
