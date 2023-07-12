@@ -197,6 +197,7 @@ set(MODULE_PATH modules)
 add_subdirectory(${MODULE_PATH}/lua-demo_lbc )
 add_subdirectory(${MODULE_PATH}/lua-cjson_lbc ) 
 add_subdirectory(${MODULE_PATH}/lua-iconv_lbc ) 
+add_subdirectory(${MODULE_PATH}/lua-lfs_lbc ) 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows") ##只有Windows需要这个模块
 	add_subdirectory(${MODULE_PATH}/lua-exforwin_lbc )
 endif()
