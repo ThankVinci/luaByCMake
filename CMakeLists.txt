@@ -9,7 +9,8 @@ cmake_minimum_required (VERSION 3.12)
 
 #1.设置项目名、版本信息、项目相关变量########
 project ("luaByCMake")
-set(LUA_VERSION 5.4.6) #lua版本号，根据源码的版本进行更改
+set(LUA_VERSION 5.4) #lua版本号，是模块的安装版本的目录，根据源码的版本进行更改
+set(_LUA_VERSION lua5.4.6) #lua实际版本号，并且是安装目录名，根据源码的版本进行更改
 set(LBC_VERSION 1.0.1) #luaByCMake版本号
 
 #项目生成目标的变量
@@ -59,12 +60,14 @@ endif()
 
 message(STATUS ${CMAKE_BUILD_TYPE})
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_Debug/)
+	set(BUILD_TYPE _Debug)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-	set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_Release/)
+	set(BUILD_TYPE _Release)
 else()
-	set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_Other/)
+	set(BUILD_TYPE _Other)
 endif()
+set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}${BUILD_TYPE}/${_LUA_VERSION})
+
 #############################################
 
 #5.设置包含目录、库目录和参加编译源文件######
