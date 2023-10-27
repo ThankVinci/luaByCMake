@@ -194,11 +194,11 @@ endif()
 #13.添加生成子项目目录#######################
 set(MODULE_PATH modules)
 #add_subdirectory(runLuaScript ) #正在废弃lua运行器
-add_subdirectory(${MODULE_PATH}/lua-demo_lbc )
-add_subdirectory(${MODULE_PATH}/lua-cjson_lbc ) 
-add_subdirectory(${MODULE_PATH}/lua-iconv_lbc ) 
-add_subdirectory(${MODULE_PATH}/lua-lfs_lbc ) 
+add_subdirectory(${MODULE_PATH}/lua_demo )
+add_subdirectory(${MODULE_PATH}/lua_cjson ) 
+add_subdirectory(${MODULE_PATH}/lua_iconv ) 
+add_subdirectory(${MODULE_PATH}/lua_lfs ) 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows") ##只有Windows需要这个模块
-	add_subdirectory(${MODULE_PATH}/lua-exforwin_lbc )
+	add_subdirectory(${MODULE_PATH}/lua_efw )
 endif()
 #############################################
