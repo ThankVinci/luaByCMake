@@ -456,19 +456,34 @@ static int lfs_lock_dir(lua_State * L)
   size_t pathl;
   HANDLE fd;
   lfs_Lock *lock;
-  char *ln;
-  const char *lockfile = "/lockfile.lfs";
-  const char *path = luaL_checklstring(L, 1, &pathl);
-  ln = (char *) malloc(pathl + strlen(lockfile) + 1);
+
+#ifdef WIN_UTF8
+  const char *path_u8 = luaL_checklstring(L, 1, &pathl);
+  WCHAR* path = U8StrtoU16Str(path_u8);
+  const WCHAR* lockfile = L"/lockfile.lfs";
+  WCHAR* ln = (WCHAR*)malloc(pathl + wcslen(lockfile) + 1);
+#else
+  const char* path = luaL_checklstring(L, 1, &pathl);
+  const char* lockfile = "/lockfile.lfs";
+  char* ln = (char*)malloc(pathl + strlen(lockfile) + 1);
+#endif
   if (!ln) {
     lua_pushnil(L);
     lua_pushstring(L, strerror(errno));
     return 2;
   }
+#ifdef WIN_UTF8
+  wcscpy(ln, path);
+  wcscat(ln, lockfile);
+  fd = CreateFileW(ln, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+      FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, NULL);
+#else
   strcpy(ln, path);
   strcat(ln, lockfile);
   fd = CreateFile(ln, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
                   FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, NULL);
+#endif
+  
   free(ln);
   if (fd == INVALID_HANDLE_VALUE) {
     return lfs_win32_pusherror(L);
@@ -675,7 +690,11 @@ static int make_dir(lua_State * L)
 #else
     const char* path = luaL_checkstring(L, 1);
 #endif
-  return pushresult(L, lfs_mkdir(path), NULL);
+    int res = pushresult(L, lfs_mkdir(path), NULL);
+#ifdef WIN_UTF8
+    free(path);
+#endif
+    return res;
 }
 
 
@@ -685,8 +704,17 @@ static int make_dir(lua_State * L)
 */
 static int remove_dir(lua_State * L)
 {
-  const char *path = luaL_checkstring(L, 1);
-  return pushresult(L, rmdir(path), NULL);
+#ifdef WIN_UTF8
+    const char* path_u8 = luaL_checkstring(L, 1);
+    WCHAR* path = U8StrtoU16Str(path_u8);
+#else
+    const char* path = luaL_checkstring(L, 1);
+#endif
+    int res = pushresult(L, rmdir(path), NULL);
+#ifdef WIN_UTF8
+    free(path);
+#endif
+    return res;
 }
 
 
@@ -917,7 +945,12 @@ static const char *mode2string(mode_t mode)
 */
 static int file_utime(lua_State * L)
 {
+#ifdef WIN_UTF8
+    const char* file_u8 = luaL_checkstring(L, 1);
+    WCHAR* file = U8StrtoU16Str(file_u8);
+#else
   const char *file = luaL_checkstring(L, 1);
+#endif
   struct utimbuf utb, *buf;
 
   if (lua_gettop(L) == 1)       /* set to current date/time */
@@ -927,8 +960,14 @@ static int file_utime(lua_State * L)
     utb.modtime = (time_t) luaL_optinteger(L, 3, utb.actime);
     buf = &utb;
   }
-
+ 
+#ifdef WIN_UTF8
+  int res = pushresult(L, _wutime(file, buf), NULL);
+  free(file);
+  return res;
+#else
   return pushresult(L, utime(file, buf), NULL);
+#endif
 }
 
 
@@ -1269,12 +1308,12 @@ static const struct luaL_Reg fslib[] = {
   { "link", make_link }, //完成添加UTF-8支持
   { "lock", file_lock },
   { "mkdir", make_dir }, //完成添加UTF-8支持
-  { "rmdir", remove_dir },
-  { "symlinkattributes", link_info },
+  { "rmdir", remove_dir }, //完成添加UTF-8支持
+  { "symlinkattributes", link_info }, //完成添加UTF-8支持
   { "setmode", lfs_f_setmode },
-  { "touch", file_utime },
+  { "touch", file_utime }, //完成添加UTF-8支持
   { "unlock", file_unlock },
-  { "lock_dir", lfs_lock_dir },
+  { "lock_dir", lfs_lock_dir }, //完成添加UTF-8支持
   { NULL, NULL },
 };
 
