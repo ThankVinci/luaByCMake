@@ -19,6 +19,7 @@
 
 #ifdef _WIN32
 #define _WIN32_WINNT 0x600
+#define WIN_UTF8  //是否开启UTF8支持
 #endif
 
 #ifndef LFS_DO_NOT_USE_LARGE_FILE
@@ -68,6 +69,24 @@
 
 #endif
 
+#ifdef WIN_UTF8
+static wchar_t* U8StrtoU16Str(const char* u8_str) {
+    size_t str_size = strlen(u8_str) + 1;
+    wchar_t* u16_str = malloc(sizeof(wchar_t) * str_size);
+    MultiByteToWideChar(CP_UTF8, 0, u8_str, -1, u16_str , str_size); //转为宽字符串即（UTF-16）
+    u16_str[str_size] = L'\0';
+    return u16_str;
+}
+
+static char* U16StrtoU8Str(wchar_t* u16_str) {
+    size_t str_size = wcslen(u16_str) + 1;
+    char* u8_str = malloc(sizeof(char) * str_size);
+    WideCharToMultiByte(CP_UTF8, 0, u16_str, -1, u8_str, str_size,NULL,NULL); //转为UTF-8窄字符串
+    u8_str[str_size] = '\0';
+    return u8_str;
+}
+#endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -101,7 +120,11 @@ typedef struct dir_data {
   int closed;
 #ifdef _WIN32
   intptr_t hFile;
+#ifdef WIN_UTF8
+  wchar_t pattern[MAX_PATH + 1];
+#else
   char pattern[MAX_PATH + 1];
+#endif
 #else
   DIR *dir;
 #endif
@@ -145,7 +168,11 @@ typedef struct dir_data {
 #define S_ISBLK(mode)  (0)
 #endif
 
+#ifdef WIN_UTF8
+#define STAT_FUNC _wstati64
+#else
 #define STAT_FUNC _stati64
+#endif
 #define LSTAT_FUNC lfs_win32_lstat
 
 #else
@@ -189,10 +216,11 @@ time_t windowsToUnixTime(FILETIME ft)
   return (time_t) (uli.QuadPart / TICKS_PER_SECOND - EPOCH_DIFFERENCE);
 }
 
-int lfs_win32_lstat(const char *path, STAT_STRUCT * buffer)
+int lfs_win32_lstat(const WCHAR *path, STAT_STRUCT * buffer)
 {
   WIN32_FILE_ATTRIBUTE_DATA win32buffer;
-  if (GetFileAttributesEx(path, GetFileExInfoStandard, &win32buffer)) {
+
+  if (GetFileAttributesExW(path, GetFileExInfoStandard, &win32buffer)) {
     if (!(win32buffer.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
       return STAT_FUNC(path, buffer);
     }
@@ -245,7 +273,12 @@ static int pushresult(lua_State * L, int res, const char *info)
 */
 static int change_dir(lua_State * L)
 {
-  const char *path = luaL_checkstring(L, 1);
+#ifdef WIN_UTF8
+    const char* u8_path = luaL_checkstring(L, 1);
+    WCHAR* path = U8StrtoU16Str(u8_path);
+#else
+    const char* path = luaL_checkstring(L, 1);
+#endif
   if (chdir(path)) {
     lua_pushnil(L);
     lua_pushfstring(L, "Unable to change working directory to '%s'\n%s\n",
@@ -269,13 +302,21 @@ static int get_dir(lua_State * L)
   lua_pushstring(L, "Function 'getcwd' not provided by system");
   return 2;
 #else
-  char *path = NULL;
+#ifdef WIN_UTF8
+    WCHAR* path = NULL;
+#else
+    char* path = NULL;
+#endif
   /* Passing (NULL, 0) is not guaranteed to work.
      Use a temp buffer and size instead. */
   size_t size = LFS_MAXPATHLEN; /* initial buffer size */
   int result;
   while (1) {
+#ifdef WIN_UTF8
+      WCHAR* path2 = realloc(path, size*sizeof(WCHAR));
+#else
     char *path2 = realloc(path, size);
+#endif
     if (!path2) {               /* failed to allocate */
       result = pusherror(L, "get_dir realloc() failed");
       break;
@@ -283,7 +324,13 @@ static int get_dir(lua_State * L)
     path = path2;
     if (getcwd(path, size) != NULL) {
       /* success, push the path to the Lua stack */
-      lua_pushstring(L, path);
+#ifdef WIN_UTF8
+        char* u8_path = U16StrtoU8Str(path);
+        lua_pushstring(L, u8_path);
+        free(u8_path);
+#else
+        lua_pushstring(L, path);
+#endif
       result = 1;
       break;
     }
@@ -627,7 +674,11 @@ static int remove_dir(lua_State * L)
 static int dir_iter(lua_State * L)
 {
 #ifdef _WIN32
+#ifdef WIN_UTF8
+  struct _wfinddata_t c_file;
+#else
   struct _finddata_t c_file;
+#endif
 #else
   struct dirent *entry;
 #endif
@@ -635,23 +686,44 @@ static int dir_iter(lua_State * L)
   luaL_argcheck(L, d->closed == 0, 1, "closed directory");
 #ifdef _WIN32
   if (d->hFile == 0L) {         /* first entry */
-    if ((d->hFile = _findfirst(d->pattern, &c_file)) == -1L) {
+#ifdef WIN_UTF8
+    if ((d->hFile = _wfindfirst(d->pattern, &c_file)) == -1L) {
+#else
+      if ((d->hFile = _findfirst(d->pattern, &c_file)) == -1L) {
+#endif
       lua_pushnil(L);
       lua_pushstring(L, strerror(errno));
       d->closed = 1;
       return 2;
     } else {
-      lua_pushstring(L, c_file.name);
+#ifdef WIN_UTF8
+          char* name = U16StrtoU8Str(c_file.name);
+          lua_pushstring(L, name);
+          free(name);
+#else
+          lua_pushstring(L, c_file.name);
+#endif
       return 1;
     }
   } else {                      /* next entry */
-    if (_findnext(d->hFile, &c_file) == -1L) {
+#ifdef WIN_UTF8
+      if (_wfindnext(d->hFile, &c_file) == -1L) {
+#else
+      if (_findnext(d->hFile, &c_file) == -1L) {
+
+#endif
       /* no more entries => close directory */
       _findclose(d->hFile);
       d->closed = 1;
       return 0;
     } else {
-      lua_pushstring(L, c_file.name);
+#ifdef WIN_UTF8
+          char* name = U16StrtoU8Str(c_file.name);
+          lua_pushstring(L, name);
+          free(name);
+#else
+          lua_pushstring(L, c_file.name);
+#endif
       return 1;
     }
   }
@@ -694,7 +766,12 @@ static int dir_close(lua_State * L)
 */
 static int dir_iter_factory(lua_State * L)
 {
+#ifdef WIN_UTF8
+  const char *u8_path = luaL_checkstring(L, 1);
+  WCHAR* path = U8StrtoU16Str(u8_path);
+#else
   const char *path = luaL_checkstring(L, 1);
+#endif
   dir_data *d;
   lua_pushcfunction(L, dir_iter);
   d = (dir_data *) lua_newuserdata(L, sizeof(dir_data));
@@ -703,14 +780,26 @@ static int dir_iter_factory(lua_State * L)
   d->closed = 0;
 #ifdef _WIN32
   d->hFile = 0L;
+#ifdef WIN_UTF8
+  if (wcslen(path) > MAX_PATH - 2)
+      luaL_error(L, "path too long: %s", u8_path);
+  else
+      swprintf(d->pattern,261, L"%ls/*", path);
+#else
   if (strlen(path) > MAX_PATH - 2)
     luaL_error(L, "path too long: %s", path);
   else
     sprintf(d->pattern, "%s/*", path);
+#endif
+
 #else
   d->dir = opendir(path);
   if (d->dir == NULL)
     luaL_error(L, "cannot open %s: %s", path, strerror(errno));
+#endif
+
+#ifdef WIN_UTF8
+  free(path);
 #endif
 #if LUA_VERSION_NUM >= 504
   lua_pushnil(L);
@@ -994,18 +1083,30 @@ struct _stat_members members[] = {
 /*
 ** Get file or symbolic link information
 */
+#ifdef WIN_UTF8
+static int _file_info_(lua_State* L,
+    int (*st)(const WCHAR*, STAT_STRUCT*)) //
+#else
 static int _file_info_(lua_State * L,
                        int (*st)(const char *, STAT_STRUCT *))
+#endif
 {
   STAT_STRUCT info;
-  const char *file = luaL_checkstring(L, 1);
+#ifdef WIN_UTF8
+  const char* u_8file = luaL_checkstring(L, 1);
+  WCHAR* file = U8StrtoU16Str(u_8file); 
+#else
+  const char* file = luaL_checkstring(L, 1);
+#endif
   int i;
-
   if (st(file, &info)) {
     lua_pushnil(L);
     lua_pushfstring(L, "cannot obtain information from file '%s': %s",
                     file, strerror(errno));
     lua_pushinteger(L, errno);
+#ifdef WIN_UTF8
+    free(file);
+#endif
     return 3;
   }
   if (lua_isstring(L, 2)) {
@@ -1139,10 +1240,10 @@ static void set_info(lua_State * L)
 
 
 static const struct luaL_Reg fslib[] = {
-  { "attributes", file_info },
-  { "chdir", change_dir },
-  { "currentdir", get_dir },
-  { "dir", dir_iter_factory },
+  { "attributes", file_info }, //完成添加UTF-8支持
+  { "chdir", change_dir }, //完成添加UTF-8支持
+  { "currentdir", get_dir }, //完成添加UTF-8支持
+  { "dir", dir_iter_factory }, //完成添加UTF-8支持
   { "link", make_link },
   { "lock", file_lock },
   { "mkdir", make_dir },
