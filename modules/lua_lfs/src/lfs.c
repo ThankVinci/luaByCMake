@@ -187,7 +187,11 @@ typedef struct dir_data {
 #endif
 
 #ifdef _WIN32
+#ifdef WIN_UTF8
+#define lfs_mkdir _wmkdir
+#else
 #define lfs_mkdir _mkdir
+#endif
 #else
 #define lfs_mkdir(path) (mkdir((path), \
     S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IXOTH))
@@ -610,8 +614,15 @@ static int file_unlock(lua_State * L)
 */
 static int make_link(lua_State * L)
 {
-  const char *oldpath = luaL_checkstring(L, 1);
-  const char *newpath = luaL_checkstring(L, 2);
+#ifdef WIN_UTF8
+  const char *oldpath_u8 = luaL_checkstring(L, 1);
+  const char *newpath_u8 = luaL_checkstring(L, 2);
+  WCHAR* oldpath = U8StrtoU16Str(oldpath_u8);
+  WCHAR* newpath = U8StrtoU16Str(newpath_u8);
+#else
+    const char* oldpath = luaL_checkstring(L, 1);
+    const char* newpath = luaL_checkstring(L, 2);
+#endif
 #ifndef _WIN32
   return pushresult(L,
                     (lua_toboolean(L, 3) ? symlink : link) (oldpath,
@@ -630,10 +641,16 @@ static int make_link(lua_State * L)
                    "hard links to directories are not supported on Windows");
     return 2;
   }
+#ifdef WIN_UTF8
+  int result = symbolic ? CreateSymbolicLinkW(newpath, oldpath, is_dir)
+      : CreateHardLinkW(newpath, oldpath, NULL);
 
+  free(newpath);
+  free(oldpath);
+#else
   int result = symbolic ? CreateSymbolicLink(newpath, oldpath, is_dir)
       : CreateHardLink(newpath, oldpath, NULL);
-
+#endif
   if (result) {
     return pushresult(L, result, NULL);
   } else {
@@ -652,7 +669,12 @@ static int make_link(lua_State * L)
 */
 static int make_dir(lua_State * L)
 {
-  const char *path = luaL_checkstring(L, 1);
+#ifdef WIN_UTF8
+    const char* path_u8 = luaL_checkstring(L, 1);
+    WCHAR* path = U8StrtoU16Str(path_u8);
+#else
+    const char* path = luaL_checkstring(L, 1);
+#endif
   return pushresult(L, lfs_mkdir(path), NULL);
 }
 
@@ -1244,9 +1266,9 @@ static const struct luaL_Reg fslib[] = {
   { "chdir", change_dir }, //完成添加UTF-8支持
   { "currentdir", get_dir }, //完成添加UTF-8支持
   { "dir", dir_iter_factory }, //完成添加UTF-8支持
-  { "link", make_link },
+  { "link", make_link }, //完成添加UTF-8支持
   { "lock", file_lock },
-  { "mkdir", make_dir },
+  { "mkdir", make_dir }, //完成添加UTF-8支持
   { "rmdir", remove_dir },
   { "symlinkattributes", link_info },
   { "setmode", lfs_f_setmode },
