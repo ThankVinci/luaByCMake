@@ -16,9 +16,16 @@
 #endif
 
 #ifdef _WIN32
+#ifdef WIN_UTF8
+#define chdir(p) (_wchdir(p))
+#define getcwd(d, s) (_wgetcwd(d, s))
+#define rmdir(p) (_wrmdir(p))
+#else
 #define chdir(p) (_chdir(p))
 #define getcwd(d, s) (_getcwd(d, s))
 #define rmdir(p) (_rmdir(p))
+#endif
+
 #define LFS_EXPORT __declspec (dllexport)
 #ifndef fileno
 #define fileno(f) (_fileno(f))
