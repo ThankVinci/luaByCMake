@@ -47,6 +47,10 @@
 
 # 折腾之路
 
+## 2023.10.28更新（好家伙鸽了4个月）
+
+觉得不能这么鸽下去了，详情见UTF-8支持的可行性分析.md
+
 ## 2023.6.28更新
 
 在luaByCMake项目中新增了lua-iconv子模块，该模块依赖libiconv库，因此编译了一份libiconv，并把库文件和头文件防止在lua-iconv项目下，具体看lua-iconv的README。
