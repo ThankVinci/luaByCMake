@@ -71,20 +71,20 @@
 
 #ifdef WIN_UTF8
 static wchar_t* U8StrtoU16Str(const char* u8_str) {
-    int u8_size = strlen(u8_str) + 1;
-    int u16_size = MultiByteToWideChar(CP_UTF8, 0, u8_str, u8_size, NULL, 0);
-    wchar_t* u16_str = malloc(u16_size);
-    MultiByteToWideChar(CP_UTF8, 0, u8_str, -1, u16_str , u16_size); //×ªÎª¿í×Ö·û´®¼´£¨UTF-16£©
-    u16_str[u16_size] = L'\0';
+    size_t u8_len = strlen(u8_str);
+    size_t u16_len = MultiByteToWideChar(CP_UTF8, 0, u8_str, u8_len, NULL, 0);
+    wchar_t* u16_str = malloc((u16_len+1) * sizeof(wchar_t));
+    MultiByteToWideChar(CP_UTF8, 0, u8_str, -1, u16_str , u16_len); //×ªÎª¿í×Ö·û´®¼´£¨UTF-16£©
+    u16_str[u16_len] = L'\0';
     return u16_str;
 }
 
 static char* U16StrtoU8Str(wchar_t* u16_str) {
-    int u16_size = wcslen(u16_str) + 1;
-    int u8_size = WideCharToMultiByte(CP_UTF8, 0, u16_str, u16_size, NULL, 0, NULL, NULL);
-    char* u8_str = malloc(u8_size);
-    WideCharToMultiByte(CP_UTF8, 0, u16_str, -1, u8_str, u8_size,NULL,NULL); //×ªÎªUTF-8Õ­×Ö·û´®
-    u8_str[u8_size] = '\0';
+    size_t u16_len = wcslen(u16_str);
+    size_t u8_len = WideCharToMultiByte(CP_UTF8, 0, u16_str, u16_len, NULL, 0, NULL, NULL);
+    char* u8_str = malloc((u8_len+1) * sizeof(char));
+    WideCharToMultiByte(CP_UTF8, 0, u16_str, -1, u8_str, u8_len,NULL,NULL); //×ªÎªUTF-8Õ­×Ö·û´®
+    u8_str[u8_len] = '\0';
     return u8_str;
 }
 #endif
