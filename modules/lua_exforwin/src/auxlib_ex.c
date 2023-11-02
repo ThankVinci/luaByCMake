@@ -42,10 +42,3 @@ int luaL_loadfilex(lua_State* L, const char* filename,
     lua_remove(L, fnameindex);
     return status;
 }
-
-
-//static const luaL_Reg aux_funcs[] = {
-//  {"dofile", luaB_dofile_utf8},
-//  {"print", luaB_print_utf8},
-//  {NULL, NULL}
-//};

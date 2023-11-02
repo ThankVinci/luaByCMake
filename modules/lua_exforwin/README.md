@@ -1,5 +1,11 @@
 # lua-exforwin-module
 
+# 2023-11-02 更新
+
+将oslib中的函数列表替换到原生的os模块中，仅进行重名的函数替换，不会影响到其他未被修改到的函数。
+
+实现原理：efw_init中luaopen_efw会调用oslib_ex的luaopen_os_ex，在这个函数中就会从全局的表中寻找os模块，然后替换os模块中重名的函数。
+
 ## 项目作用以及编码需知
 
 模块的作用旨在于为Windows的UTF-16的的操作进行扩展，比如说文件io操作和执行command的操作，lua原生的操作在Windows上只支持ANSI，在简中环境上就是GBK编码，限制是很大的。
