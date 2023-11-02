@@ -3,6 +3,6 @@
 
 #include "efw.h"
 
-int (luaopen_base_ex)(lua_State* L);
+int (luaload_base_ex)(lua_State* L);
 
 #endif // _BASELIB_EX_H

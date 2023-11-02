@@ -41,17 +41,10 @@ static const luaL_Reg base_funcs[] = {
   {NULL, NULL}
 };
 
-int luaopen_base_ex(lua_State* L) {
-    /* open lib into global table */
-    lua_pushglobaltable(L);
+int luaload_base_ex(lua_State* L) {
+    lua_getglobal(L, LUA_GNAME); //对于base模块的函数，只需要设到_G表中即可
     luaL_setfuncs(L, base_funcs, 0);
-    /* set global _G */
-    lua_pushvalue(L, -1);
-    lua_setfield(L, -2, LUA_GNAME);
-    /* set global _VERSION */
-    lua_pushliteral(L, LUA_VERSION);
-    lua_setfield(L, -2, "_VERSION");
-    return 1;
+    return 0;
 }
 
 #endif
