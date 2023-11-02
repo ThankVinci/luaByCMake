@@ -41,10 +41,10 @@ static int io_open_utf8(lua_State* L) {
 static int io_pclose(lua_State* L) {
 	LStream* p = tolstream(L);
 	errno = 0;
-	return luaL_execresult(L, l_pclose(L, p->f));
+	return luaL_execresult(L, _pclose(p->f));
 }
 
-static int io_popen(lua_State* L) {
+static int io_popen_utf8(lua_State* L) {
 	const char* filename = luaL_checkstring(L, 1);
 	const char* mode = luaL_optstring(L, 2, "r");
 	wchar_t* w_filename = U8StrtoU16Str(filename);
@@ -60,7 +60,7 @@ static int io_popen(lua_State* L) {
 
 static const luaL_Reg iolib_funcs[] = {
   {"open", io_open_utf8},
-  {"popen", io_open_utf8},
+  {"popen", io_popen_utf8},
   {NULL, NULL}
 };
 
