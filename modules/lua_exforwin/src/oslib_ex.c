@@ -24,8 +24,7 @@ LUAMOD_API int luaopen_os_ex(lua_State *L) {
     lua_getglobal(L, "_G");
     lua_getfield(L,-1,"os"); //获取全局的os表移到栈顶
     if (lua_istable(L,-1)) {
-        //如果栈顶是一个表
-        luaL_setfuncs(L, oslib_funcs, 0); //会进行函数替换
+        luaL_setfuncs(L, oslib_funcs, 0);
     }
     else {
         //如果栈顶不是一个表（不太可能哈）,就插入一个新表
