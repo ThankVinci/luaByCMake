@@ -1,15 +1,12 @@
 #include "oslib_ex.h"
 
-#define l_wsystem(cmd)	_wsystem(cmd)  /* default definition */
-
 static int os_execute(lua_State *L) {
-  //_setmode(_fileno(stdout), _O_U16TEXT);
   const char *cmd = luaL_optstring(L, 1, NULL); //获取UTF-8字符串
-  size_t cmdLength = strlen(cmd)+1;
-  wchar_t* cmd_u16 = U8StrtoU16Str(cmd);
+  wchar_t* w_cmd = U8StrtoU16Str(cmd);
   int stat;
   errno = 0;
-  stat = l_wsystem(cmd_u16);
+  stat = _wsystem(w_cmd);
+  free(w_cmd);
   if (cmd != NULL)
     return luaL_execresult(L, stat);
   else {
@@ -18,12 +15,25 @@ static int os_execute(lua_State *L) {
   }
 }
 
-static const struct luaL_Reg efwlib[] = {
+static const struct luaL_Reg oslib_funcs[] = {
 	{"execute",   os_execute},
 	{NULL,NULL}
 };
 
 LUAMOD_API int luaopen_os_ex(lua_State *L) {
-  luaL_newlib(L, efwlib);
-  return 1;
+    lua_getglobal(L, "_G");
+    lua_getfield(L,-1,"os"); //获取全局的os表移到栈顶
+    if (lua_istable(L,-1)) {
+        //如果栈顶是一个表
+        luaL_setfuncs(L, oslib_funcs, 0); //会进行函数替换
+    }
+    else {
+        //如果栈顶不是一个表（不太可能哈）,就插入一个新表
+        lua_newtable(L);
+        luaL_setfuncs(L, oslib_funcs, 0);
+        lua_pushstring(L,"os");
+        lua_pushvalue(L, -2);
+        lua_setglobal(L, "os");
+    }
+    return 0;
 }
