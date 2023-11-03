@@ -15,8 +15,30 @@ static int os_execute_utf8(lua_State *L) {
   }
 }
 
+static int os_remove_utf8(lua_State* L) {
+    const char* filename = luaL_checkstring(L, 1);
+    wchar_t* w_filename = U8StrtoU16Str(filename);
+    int result = _wremove(w_filename);
+    free(w_filename);
+    return luaL_fileresult(L, result == 0, filename);
+}
+
+
+static int os_rename_utf8(lua_State* L) {
+    const char* fromname = luaL_checkstring(L, 1);
+    const char* toname = luaL_checkstring(L, 2);
+    wchar_t* w_fromname = U8StrtoU16Str(fromname);
+    wchar_t* w_toname = U8StrtoU16Str(toname);
+    int result = _wrename(w_fromname, w_toname);
+    free(w_fromname);
+    free(w_toname);
+    return luaL_fileresult(L, result == 0, NULL);
+}
+
 static const struct luaL_Reg oslib_funcs[] = {
 	{"execute",   os_execute_utf8},
+    {"remove",    os_remove_utf8},
+    {"rename",    os_rename_utf8},
 	{NULL,NULL}
 };
 
