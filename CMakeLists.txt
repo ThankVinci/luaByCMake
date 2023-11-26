@@ -196,7 +196,7 @@ set(MODULE_PATH modules)
 #add_subdirectory(runLuaScript ) #正在废弃lua运行器
 add_subdirectory(${MODULE_PATH}/lua_demo )
 add_subdirectory(${MODULE_PATH}/lua_cjson ) 
-add_subdirectory(${MODULE_PATH}/lua_iconv ) 
+#add_subdirectory(${MODULE_PATH}/lua_iconv ) 
 add_subdirectory(${MODULE_PATH}/lua_lfs ) 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows") ##只有Windows需要这个模块
 	add_subdirectory(${MODULE_PATH}/lua_exforwin )
