@@ -1,0 +1,14 @@
+# 设置安装目录
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(BUILD_TYPE _Debug)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+	set(BUILD_TYPE _Release)
+else()
+	set(BUILD_TYPE _Other)
+endif()
+set(INSTALL_PATH ${INSTALL_PATH_ROOT}/${_COMPILER})
+set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}${BUILD_TYPE}/${_LUA_VERSION})
+
+# 设置安装头文件
+set(INSTALL_H_FILES ${LUA_INCLUDE_DIR}/lauxlib.h ${LUA_INCLUDE_DIR}/lua.h ${LUA_INCLUDE_DIR}/lua.hpp ${LUA_INCLUDE_DIR}/luaconf.h ${LUA_INCLUDE_DIR}/lualib.h )
+install(FILES ${INSTALL_H_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
