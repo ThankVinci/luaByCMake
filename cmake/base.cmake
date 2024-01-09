@@ -52,6 +52,18 @@ install(TARGETS ${LUA_EXEC} ${LUAC_EXEC} ${LIBLUA_SHARED} ${LIBLUA_STATIC}
 	ARCHIVE DESTINATION lib
 )
 
+# 构建后删除符号
+if(NOT(CMAKE_STRIP STREQUAL "")) #若编译器有strip
+# 删除生成的共享库中不需要的符号
+add_custom_command(TARGET ${LIBLUA_SHARED}
+	POST_BUILD #在目标生成后再执行
+	COMMAND ${CMAKE_STRIP} "--strip-unneeded" "$<TARGET_FILE:${LIBLUA_SHARED}>") 
+# 删除生成的lua所有符号
+add_custom_command(TARGET ${LUA_EXEC}
+	POST_BUILD
+	COMMAND ${CMAKE_STRIP} "-s" "$<TARGET_FILE:${LUA_EXEC}>") 
+endif()
+
 # 配置构建平台变量
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
