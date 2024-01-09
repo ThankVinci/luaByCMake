@@ -52,6 +52,27 @@ install(TARGETS ${LUA_EXEC} ${LUAC_EXEC} ${LIBLUA_SHARED} ${LIBLUA_STATIC}
 	ARCHIVE DESTINATION lib
 )
 
+# 配置构建平台变量
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		set(BUILD_PLATFORM "MinGW")
+	elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+		set(BUILD_PLATFORM "MSVC")
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		set(BUILD_PLATFORM "LinuxGNU")
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+	if(CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
+		set(BUILD_PLATFORM "AppleClang")
+	endif()
+endif()
+
+if(CROSS_COMPILE EQUAL 1)
+	set(BUILD_PLATFORM "LinuxGNU")
+endif()
+
 # 信息打印
 message(STATUS ${CMAKE_C_COMPILER_ID}) #打印出编译器
 message(STATUS ${CMAKE_SYSTEM_NAME}) #打印系统名

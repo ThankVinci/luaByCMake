@@ -1,8 +1,6 @@
-if((CROSS_COMPILE NOTEQUAL 0 ) OR (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_C_COMPILER_ID STREQUAL "GNU")) #仅LinuxGNU可用的cmake配置
+if(BUILD_PLATFORM STREQUAL "LinuxGNU") #仅LinuxGNU可用的cmake配置
 #linux还有个readline的构建，但是不知道咋整
 add_compile_definitions(LUA_USE_LINUX ) #LUA_USE_READLINE
-
-set(_COMPILER LinuxGNU) #设置编译器名称，供common.cmake使用
 
 set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl" ${CMAKE_EXE_LINKER_FLAGS} ) #-lreadline 
 target_link_libraries(${LUAC_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )

@@ -1,7 +1,5 @@
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_C_COMPILER_ID STREQUAL "AppleClang") 
+if(BUILD_PLATFORM STREQUAL "AppleClang") 
 add_compile_definitions(LUA_USE_MACOSX LUA_USE_READLINE )
-
-set(_COMPILER AppleClang) #设置编译器名称，供common.cmake使用
 
 set(CMAKE_EXE_LINKER_FLAGS "-lreadline")
 target_link_libraries(${LUAC_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
