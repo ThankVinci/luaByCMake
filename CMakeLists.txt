@@ -1,16 +1,23 @@
 cmake_minimum_required (VERSION 3.12)
 set(CROSS_COMPILE 0) # 当CROSS_COMPILE为1时表示开启交叉编译
 if(CROSS_COMPILE EQUAL 1) # 配置仅在交叉编译时可用
-	include($ENV{TOOLCHAIN_HOME_ARM}/cmake/toolchain.cmake ) #这里导入工具链目录下的toolchain.cmake文件
+	set(CROSS_IN_WINDOW 1) # linux下进行编译需要把
+	set(EXEC_SUFFIX )
+	if(CROSS_IN_WINDOW EQUAL 1)
+		set(EXEC_SUFFIX ".exe")
+	endif()
+	include($ENV{TOOLCHAIN_HOME_AARCH64_LIBC}/cmake/toolchain.cmake ) #这里导入工具链目录下的toolchain.cmake文件
 endif()
 
 project ("luaByCMake")
-# 请注意，base和common之间夹的是不同的配置，
+# 请注意，base和common之间夹的是不同编译器的配置，
 # 这里打算设计成使用不同系统不同编译链工具就能使得唯一一种配置生效
 # base中会定义一些变量给不同的配置使用，而common会拿出配置中通用的变量出来用
-include("./cmake/base.cmake") 
-include("./cmake/mingw.cmake")
+include("./cmake/base.cmake")
+if(CROSS_COMPILE EQUAL 0)
+include("./cmake/mingw.cmake") #windows下使用交叉编译在现有的逻辑下会被当作MinGW，所以先用一个if解决，之后再在base中处理一下
 include("./cmake/msvc.cmake")
+endif()
 include("./cmake/gnu.cmake")
 include("./cmake/darwin.cmake")
 include("./cmake/common.cmake")

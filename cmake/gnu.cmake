@@ -1,4 +1,4 @@
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_C_COMPILER_ID STREQUAL "GNU") #仅LinuxGNU可用的cmake配置
+if((CROSS_COMPILE NOTEQUAL 0 ) OR (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_C_COMPILER_ID STREQUAL "GNU")) #仅LinuxGNU可用的cmake配置
 #linux还有个readline的构建，但是不知道咋整
 add_compile_definitions(LUA_USE_LINUX ) #LUA_USE_READLINE
 
