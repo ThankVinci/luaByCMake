@@ -19,7 +19,7 @@ include("./cmake/msvc.cmake")
 include("./cmake/gnu.cmake")
 include("./cmake/darwin.cmake")
 include("./cmake/common.cmake")
-message(STATUS ${CMAKE_C_COMPILER})
+
 # 添加生成子项目目录
 set(MODULE_PATH modules)
 add_subdirectory(${MODULE_PATH}/lua_demo )
