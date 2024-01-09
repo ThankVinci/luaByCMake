@@ -14,14 +14,12 @@ project ("luaByCMake")
 # 这里打算设计成使用不同系统不同编译链工具就能使得唯一一种配置生效
 # base中会定义一些变量给不同的配置使用，而common会拿出配置中通用的变量出来用
 include("./cmake/base.cmake")
-if(CROSS_COMPILE EQUAL 0)
-include("./cmake/mingw.cmake") #windows下使用交叉编译在现有的逻辑下会被当作MinGW，所以先用一个if解决，之后再在base中处理一下
+include("./cmake/mingw.cmake")
 include("./cmake/msvc.cmake")
-endif()
 include("./cmake/gnu.cmake")
 include("./cmake/darwin.cmake")
 include("./cmake/common.cmake")
-
+message(STATUS ${CMAKE_C_COMPILER})
 # 添加生成子项目目录
 set(MODULE_PATH modules)
 add_subdirectory(${MODULE_PATH}/lua_demo )
