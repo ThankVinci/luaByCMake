@@ -3,8 +3,8 @@ set(CMAKE_DEBUG_POSTFIX "d") # 设置debug的后缀
 set(CMAKE_BUILD_TYPE Release) # 设置构建类型为release
 
 # 编译器预定义设定
-add_compile_definitions(NDEBUG ) # 设置lua中原本的预定义
-add_compile_definitions(LUA_COMPAT_5_3 )
+add_compile_definitions(NDEBUG LUA_COMPAT_5_3 ) # 设置lua中原本的预定义
+add_definitions(-w ) # 隐藏warning
 
 set(LUA_VERSION 5.4) #lua版本号，是模块的安装版本的目录，根据源码的版本手动进行更改
 set(_LUA_VERSION lua5.4.6) #lua实际版本号，并且是安装目录名，根据源码的版本手动进行更改
