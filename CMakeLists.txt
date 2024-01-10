@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-set(CROSS_COMPILE 1) # 当CROSS_COMPILE为1时表示开启交叉编译
+set(CROSS_COMPILE 0) # 当CROSS_COMPILE为1时表示开启交叉编译
 if(CROSS_COMPILE EQUAL 1) # 配置仅在交叉编译时可用
 	set(CROSS_IN_WINDOW 1) # linux下进行编译需要把
 	set(EXEC_SUFFIX )
