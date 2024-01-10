@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-set(CROSS_COMPILE 0) # 当CROSS_COMPILE为1时表示开启交叉编译
+set(CROSS_COMPILE 1) # 当CROSS_COMPILE为1时表示开启交叉编译
 if(CROSS_COMPILE EQUAL 1) # 配置仅在交叉编译时可用
 	set(CROSS_IN_WINDOW 1) # linux下进行编译需要把
 	set(EXEC_SUFFIX )
@@ -25,7 +25,7 @@ set(MODULE_PATH modules)
 add_subdirectory(${MODULE_PATH}/lua_demo )
 add_subdirectory(${MODULE_PATH}/lua_cjson ) 
 #add_subdirectory(${MODULE_PATH}/lua_iconv ) 
-add_subdirectory(${MODULE_PATH}/lua_lfs ) 
+add_subdirectory(${MODULE_PATH}/lua_lfs )
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows") ##只有Windows需要这个模块
 	add_subdirectory(${MODULE_PATH}/lua_exforwin )
 endif()
