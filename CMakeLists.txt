@@ -10,22 +10,22 @@ if(CROSS_COMPILE EQUAL 1) # 配置仅在交叉编译时可用
 endif()
 
 project ("luaByCMake")
-# 请注意，base和common之间夹的是不同编译器的配置，
-# 这里打算设计成使用不同系统不同编译链工具就能使得唯一一种配置生效
-# base中会定义一些变量给不同的配置使用，而common会拿出配置中通用的变量出来用
-include("./cmake/base.cmake")
+# 预定义中会设置一些与项目无关的变量，判断构建的目标平台、设置安装路径和全局函数
+include("./cmake/predefined.cmake")
+# 目标平台的配置中只有一些简单的与系统相关宏定义以及链接的库
 include("./cmake/mingw.cmake")
 include("./cmake/msvc.cmake")
 include("./cmake/gnu.cmake")
 include("./cmake/darwin.cmake")
-include("./cmake/common.cmake")
+# 主模块中包含了lua源代码的内容
+include("./cmake/mainmodule.cmake")
 
 # 添加生成子项目目录
 set(MODULE_PATH modules)
 add_subdirectory(${MODULE_PATH}/lua_demo )
-add_subdirectory(${MODULE_PATH}/lua_cjson ) 
+#dd_subdirectory(${MODULE_PATH}/lua_cjson ) 
 #add_subdirectory(${MODULE_PATH}/lua_iconv ) 
-add_subdirectory(${MODULE_PATH}/lua_lfs )
+#add_subdirectory(${MODULE_PATH}/lua_lfs )
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows") ##只有Windows需要这个模块
-	add_subdirectory(${MODULE_PATH}/lua_exforwin )
+	#add_subdirectory(${MODULE_PATH}/lua_exforwin )
 endif()
