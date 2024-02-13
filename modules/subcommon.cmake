@@ -24,9 +24,9 @@ endif()
 target_link_libraries(${MODULE_NAME_WITH_MODULE} ${LIBLUA_SHARED} ${MODULE_LINK_LIBS} )
 
 # 构建后删除模块中所有符号
-add_custom_command(TARGET ${MODULE_NAME_WITH_MODULE} #直接把符号都删了
-			POST_BUILD #在目标生成后再执行
-			COMMAND ${CMAKE_STRIP} "-s" "$<TARGET_FILE:${MODULE_NAME_WITH_MODULE}>")
+if(NOT(CMAKE_STRIP STREQUAL ""))
+remove_symbols(${MODULE_NAME_WITH_MODULE})
+endif()
 
 # lua模块就安装到lib/lua/${LUA_VERSION}目录下，这样编译之后的lua文件直接require模块的话找的就是一起编译出来的模块
 install(TARGETS ${MODULE_NAME_WITH_MODULE}
