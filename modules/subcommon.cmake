@@ -22,7 +22,8 @@ endif()
 target_link_libraries(${MODULE_NAME_WITH_MODULE} ${LIBLUA_SHARED} ${MODULE_LINK_LIBS} )
 
 # 构建后删除模块中所有符号
-if(NOT(CMAKE_STRIP STREQUAL ""))
+string(LENGTH "${CMAKE_STRIP}" CMAKE_STRIP_EXISTS)
+if(NOT(CMAKE_STRIP_EXISTS EQUAL 0))
 remove_symbols(${MODULE_NAME_WITH_MODULE})
 endif()
 
