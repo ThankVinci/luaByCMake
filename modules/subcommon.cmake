@@ -1,7 +1,5 @@
 # 包含子模块的通用配置
 
-function(add_sub_module )
-
 # 设置包含目录
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include )
 
@@ -32,5 +30,3 @@ endif()
 install(TARGETS ${MODULE_NAME_WITH_MODULE}
 	LIBRARY DESTINATION lib/lua/${LUA_VERSION}
 )
-
-endfunction()
