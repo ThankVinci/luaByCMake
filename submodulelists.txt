@@ -1,5 +1,0 @@
-lua-demo_lbc
-lua-cjson_lbc
-lua-iconv_lbc
-lua-exforwin_lbc
-lua-lfs_lbc
