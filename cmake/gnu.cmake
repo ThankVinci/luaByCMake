@@ -3,11 +3,6 @@ if(BUILD_PLATFORM STREQUAL "LinuxGNU") #仅LinuxGNU可用的cmake配置
 add_compile_definitions(LUA_USE_LINUX ) #LUA_USE_READLINE
 
 set(CMAKE_EXE_LINKER_FLAGS "-lm -Wl,-E -ldl" ${CMAKE_EXE_LINKER_FLAGS} ) #-lreadline 
-target_link_libraries(${LUAC_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
-target_link_libraries(${LUA_EXEC} ${CMAKE_EXE_LINKER_FLAGS} )
-
-set_target_properties(${LIBLUA_STATIC} PROPERTIES OUTPUT_NAME ${LUA_NAME}) #GNU编译产生的库名前面会自己加上lib
-set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 
 #设置RunPath
 set_property(
