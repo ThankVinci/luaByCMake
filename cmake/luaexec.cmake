@@ -11,7 +11,8 @@ set_target_properties(${LUAC_EXEC} PROPERTIES OUTPUT_NAME ${LUA_NAME}c)
 set_target_properties(${LUA_EXEC} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 
 # 删除exec的符号
-if(NOT(CMAKE_STRIP STREQUAL ""))
+string(LENGTH "${CMAKE_STRIP}" CMAKE_STRIP_EXISTS)
+if(NOT(CMAKE_STRIP_EXISTS EQUAL 0))
 remove_symbols(${LUA_EXEC})
 remove_symbols(${LUAC_EXEC})
 endif()

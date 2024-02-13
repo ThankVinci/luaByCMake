@@ -21,7 +21,8 @@ set_target_properties(${LIBLUA_SHARED} PROPERTIES OUTPUT_NAME ${LUA_NAME})
 endif()
 
 # 删除动态库的符号
-if(NOT(CMAKE_STRIP STREQUAL ""))
+string(LENGTH "${CMAKE_STRIP}" CMAKE_STRIP_EXISTS)
+if(NOT(CMAKE_STRIP_EXISTS EQUAL 0))
 remove_symbols_unneeded(${LIBLUA_SHARED})
 endif()
 
