@@ -20,3 +20,21 @@ endif()
 install(TARGETS ${LUA_EXEC} ${LUAC_EXEC} 
 	RUNTIME DESTINATION bin
 )
+
+#设置RunPath
+if(BUILD_PLATFORM STREQUAL "LinuxGNU")
+set_property(
+	TARGET ${LUA_EXEC}
+	PROPERTY INSTALL_RPATH
+	"$ORIGIN/"
+	"$ORIGIN/../lib/"
+)
+elseif(BUILD_PLATFORM STREQUAL "AppleClang") 
+#set(CMAKE_MACOSX_RPATH ON) #测试之后发现这个不开也是可以的
+set_property(
+	TARGET ${LUA_EXEC}
+	PROPERTY INSTALL_RPATH
+	"@executable_path/"
+	"@executable_path/../lib/"
+)
+endif()
