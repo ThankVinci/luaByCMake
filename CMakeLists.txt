@@ -18,6 +18,10 @@ include("./cmake/mingw.cmake")
 include("./cmake/msvc.cmake")
 include("./cmake/gnu.cmake")
 include("./cmake/darwin.cmake")
+# 设置安装目录
+set(INSTALL_PATH_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/installed)
+set(INSTALL_PATH ${INSTALL_PATH_ROOT}/${BUILD_PLATFORM})
+set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_${CMAKE_BUILD_TYPE}/${_LUA_VERSION})
 # 主模块中包含了lua源代码的内容
 include("./cmake/mainmodule.cmake")
 

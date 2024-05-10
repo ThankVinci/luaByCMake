@@ -6,5 +6,5 @@ add_compile_definitions(LUA_BUILD_AS_DLL )
 
 set(CMAKE_EXE_LINKER_FLAGS "" )
 
-set(BUILD_INFO ", Built by Visual Studio, MSVC ${CMAKE_C_COMPILER_VERSION}, ${BUILD_PLATFORM_BITWID} bit")
+set(BUILD_INFO ", Built by Visual Studio ${CMAKE_C_COMPILER_VERSION}, ${BUILD_PLATFORM_BITWID} bit")
 endif()
