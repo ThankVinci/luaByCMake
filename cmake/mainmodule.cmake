@@ -2,9 +2,6 @@
 add_compile_definitions(NDEBUG LUA_COMPAT_5_3 ) # 设置lua中原本的预定义
 add_definitions(-w ) # 隐藏warning
 
-set(LUA_VERSION 5.4) #lua版本号，是模块的安装版本的目录，根据源码的版本手动进行更改
-set(_LUA_VERSION lua5.4.6) #lua实际版本号，并且是安装目录名，根据源码的版本手动进行更改
-
 # 设置要生成的目标的名称以及变量
 set(LIBLUA_STATIC liblua_static)
 set(LIBLUA_SHARED liblua_shared)

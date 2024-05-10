@@ -5,6 +5,9 @@
 set(CMAKE_DEBUG_POSTFIX "d") # 设置debug的后缀
 set(CMAKE_BUILD_TYPE Release) # 设置构建类型为release
 
+set(LUA_VERSION 5.4) #lua版本号，是模块的安装版本的目录，根据源码的版本手动进行更改
+set(_LUA_VERSION lua5.4.6) #lua实际版本号，并且是安装目录名，根据源码的版本手动进行更改
+
 # 配置构建平台变量
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -20,6 +23,15 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	if(CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
 		set(BUILD_PLATFORM "AppleClang")
 	endif()
+endif()
+
+# 配置构建平台位宽
+if(CMAKE_SIZEOF_VOID_P EQUAL 8 )
+	set(BUILD_PLATFORM_BITWID 64)
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+	set(BUILD_PLATFORM_BITWID 32)
+else()
+	set(BUILD_PLATFORM_BITWID ${CMAKE_SIZEOF_VOID_P}/8)
 endif()
 
 # 项目默认的交叉编译的目标平台为LinuxGNU
@@ -38,11 +50,11 @@ set(INSTALL_PATH ${INSTALL_PATH_ROOT}/${BUILD_PLATFORM})
 set(CMAKE_INSTALL_PREFIX ${INSTALL_PATH}_${CMAKE_BUILD_TYPE}/${_LUA_VERSION})
 
 # 信息打印
-message(STATUS ${CMAKE_C_COMPILER_ID}) #打印出编译器
-message(STATUS ${CMAKE_SYSTEM_NAME}) #打印系统名
+message(STATUS ${CMAKE_C_COMPILER_ID} " " ${CMAKE_C_COMPILER_VERSION}) #打印出编译器
+message(STATUS ${CMAKE_SYSTEM_NAME} " " ${CMAKE_SYSTEM_VERSION}) #打印系统名
 # 查看debug和release模式的编译选项
-message(STATUS ${CMAKE_C_FLAGS_DEBUG}) 
-message(STATUS ${CMAKE_C_FLAGS_RELEASE}) #GNU、MINGW的RELEASE默认开O3，MSVC的RELEASE默认开O2
+message(STATUS "Debug flags: " ${CMAKE_C_FLAGS_DEBUG}) 
+message(STATUS "Release flags: " ${CMAKE_C_FLAGS_RELEASE}) #GNU、MINGW的RELEASE默认开O3，MSVC的RELEASE默认开O2
 message(STATUS ${CMAKE_BUILD_TYPE})
 message(STATUS ${CMAKE_EXE_LINKER_FLAGS} )
 
