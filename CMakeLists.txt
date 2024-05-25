@@ -7,6 +7,8 @@ if(CROSS_COMPILE EQUAL 1) # 配置仅在交叉编译时可用
 		set(EXEC_SUFFIX ".exe")
 	endif()
 	include($ENV{TOOLCHAIN_HOME_AARCH64_LIBC}/cmake/toolchain.cmake ) #这里导入工具链目录下的toolchain.cmake文件
+	#$ENV{TOOLCHAIN_HOME_AARCH64_LIBC}是指交叉编译链工具的根目录
+	#本项目提供了参考模板，在"本项目根目录/toolchains/toolchain.cmake"，是aarch64-none-linux-gnu的配置，可自行修改成别的编译链的配置，将其复制到"$ENV{TOOLCHAIN_HOME_AARCH64_LIBC}/cmake"中使用
 endif()
 
 set(GENERATE_VS_SLN 0) # 若通过CMAKE生成VS解决方案的话，请将此变量设为1，并在msvc.cmake设置构建类型，因为生成sln之后无法预知BUILD_TYPE，因此Release和Debug的安装目录就会混淆
