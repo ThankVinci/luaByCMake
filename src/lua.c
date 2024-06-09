@@ -658,6 +658,22 @@ static int pmain (lua_State *L) {
   return 1;
 }
 
+#ifdef _WIN32
+#include "exforwin/efw.h"
+static char** prepare_opt(int* argc) {
+    wchar_t** argv_w = CommandLineToArgvW(GetCommandLineW(), argc);
+    char** argv = malloc(sizeof(char*) * (*argc + 1)); // 申请空间时需要在末尾多申请一个存放空指针
+    for (int i = 0; i < *argc; i++) {
+        char* tmp = U16StrtoU8Str(argv_w[i]);
+        argv[i] = malloc(sizeof(char) * (strlen(tmp) + 1));
+        if(argv[i] != NULL) memcpy(argv[i], tmp, (strlen(tmp) + 1));
+        free(tmp);
+    }
+    argv[*argc] = NULL; // lua检测入参是否结束是通过检测空指针实现的
+    LocalFree(argv_w);
+    return argv;
+}
+#endif // _WIN32
 
 int main (int argc, char **argv) {
   int status, result;
@@ -667,6 +683,9 @@ int main (int argc, char **argv) {
     return EXIT_FAILURE;
   }
   lua_gc(L, LUA_GCSTOP);  /* stop GC while building state */
+#ifdef _WIN32
+  argv = prepare_opt(&argc);
+#endif
   lua_pushcfunction(L, &pmain);  /* to call 'pmain' in protected mode */
   lua_pushinteger(L, argc);  /* 1st argument */
   lua_pushlightuserdata(L, argv); /* 2nd argument */

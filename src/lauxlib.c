@@ -774,7 +774,9 @@ static int skipcomment (FILE *f, int *cp) {
   else return 0;  /* no comment */
 }
 
-
+#ifdef  _WIN32
+#include "./exforwin/lauxlib.c"
+#else
 LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
                                              const char *mode) {
   LoadF lf;
@@ -813,6 +815,7 @@ LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
   lua_remove(L, fnameindex);
   return status;
 }
+#endif // _WIN32
 
 
 typedef struct LoadS {
