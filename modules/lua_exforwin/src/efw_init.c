@@ -1,7 +1,7 @@
-#include "efw.h"
+#include "exforwin/efw.h"
 
 #define LIB_NAME                "efw"
-#define LIB_VERSION             "1.2"
+#define LIB_VERSION             "1.3"
 
 #include "baselib_ex.h"
 #include "oslib_ex.h"

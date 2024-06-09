@@ -1,22 +1,6 @@
 #include "baselib_ex.h"
-#include "auxlib_ex.h"
 
 #ifdef WIN_UTF8
-
-static int dofilecont(lua_State* L, int d1, lua_KContext d2) {
-    (void)d1;  (void)d2;  /* only to match 'lua_Kfunction' prototype */
-    return lua_gettop(L) - 1;
-}
-
-static int luaB_dofile_utf8(lua_State* L) {
-    const char* fname = luaL_optstring(L, 1, NULL);
-    lua_settop(L, 1);
-    if (l_unlikely(luaL_loadfile(L, fname) != LUA_OK))
-        return lua_error(L);
-    lua_callk(L, 0, LUA_MULTRET, 0, dofilecont);
-    return dofilecont(L, 0, 0);
-}
-
 static int luaB_print_utf8(lua_State* L) {
     int n = lua_gettop(L);  /* number of arguments */
     int i;
@@ -36,7 +20,6 @@ static int luaB_print_utf8(lua_State* L) {
 }
 
 static const luaL_Reg base_funcs[] = {
-  {"dofile", luaB_dofile_utf8}, //添加dofile能够执行utf8文件名的lua模块
   {"print", luaB_print_utf8}, //添加print输出utf8字符串支持
   {NULL, NULL}
 };

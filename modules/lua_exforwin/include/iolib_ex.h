@@ -1,7 +1,7 @@
 #ifndef _IOLIB_EX_H
 #define _IOLIB_EX_H
 
-#include "efw.h"
+#include "exforwin/efw.h"
 
 #if !defined(l_checkmode)
 
