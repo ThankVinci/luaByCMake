@@ -1,5 +1,5 @@
 @echo off
-
+ 
 mkdir build
 cd build
 make clean

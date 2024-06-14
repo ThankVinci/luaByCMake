@@ -1,5 +1,5 @@
 @echo off
-
+ 
 mkdir build
 cd build
 ::-G 后面表示要构建的项目的生成器类型，这里指定的是vs2022，详情可以使用cmake -G 查看支持的类型
