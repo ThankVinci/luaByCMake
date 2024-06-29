@@ -9,5 +9,5 @@ mkdir build
 cd build
 make clean
 cmake .. -G "MinGW Makefiles"
-::make -j8
-::make install
+make -j8
+make install
