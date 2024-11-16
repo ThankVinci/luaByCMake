@@ -13,7 +13,7 @@ endif()
 
 set(GENERATE_VS_SLN 0) # 若通过CMAKE生成VS解决方案的话，请将此变量设为1，并在msvc.cmake设置构建类型，因为生成sln之后无法预知BUILD_TYPE，因此Release和Debug的安装目录就会混淆
 
-project ("luaByCMake")
+project ("luaByCMake" C)
 # 预定义中会设置一些与项目无关的变量，判断构建的目标平台、设置安装路径和全局函数
 set(BUILD_INFO "")
 include("./cmake/predefined.cmake")
@@ -38,5 +38,5 @@ add_subdirectory(${MODULE_PATH}/lua_cjson )
 #add_subdirectory(${MODULE_PATH}/lua_iconv ) 
 add_subdirectory(${MODULE_PATH}/lua_lfs )
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows") ##只有Windows需要这个模块
-	add_subdirectory(${MODULE_PATH}/lua_exforwin )
+	add_subdirectory(${MODULE_PATH}/lua_efw )
 endif()
