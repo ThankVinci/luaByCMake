@@ -4,18 +4,21 @@
 static int luaB_print_utf8(lua_State* L) {
     int n = lua_gettop(L);  /* number of arguments */
     int i;
+    // 输出宽字符串前先把翻译模式改成_O_U16TEXT
+    _setmode(_fileno(stdout), _O_U16TEXT);
     for (i = 1; i <= n; i++) {  /* for each argument */
         size_t l;
-        _setmode(_fileno(stdout), _O_U16TEXT);
         const char* s_u8 = luaL_tolstring(L, i, &l);  /* convert it to string */
-        WCHAR* s = U8StrtoU16Str(s_u8);
+        WCHAR* s = U8StrtoU16Str(s_u8); /* 将char*的u8字符串转换为wchar*的u16字符串 */
         if (i > 1)  /* not the first element? */
-            wprintf(L"\t");;  /* add a tab before it */
-        wprintf(L"%ls",s);
+            lua_writewstring(L"\t", 1);  /* add a tab before it */
+        lua_writewstring(s, wcslen(s));
         free(s);
         lua_pop(L, 1);  /* pop result */
     }
-    wprintf(L"\n");
+    lua_writewline();
+    // 输出完成并刷新后把翻译模式改回_O_TEXT
+    _setmode(_fileno(stdout), _O_TEXT);
     return 0;
 }
 

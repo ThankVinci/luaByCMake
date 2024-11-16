@@ -38,6 +38,21 @@ static char* U16StrtoU8Str(wchar_t* u16_str) {
     u8_str[u8_len] = '\0';
     return u8_str;
 }
-#endif
+
+/* 实现宽字符串输出,是lua_writestring的宽字符串版本
+目前只在luaB_print_utf8中使用这个函数实现输出，进行输出前，需要先设置翻译模式为_O_U16TEXT
+输出完成，刷新到文件流后需要把翻译模式改回_O_TEXT，避免一些情况下，lua原生使用fputs等接口输出导致错误
+*/
+#if !defined(lua_writewstring) 
+#define lua_writewstring(s,l)  fwrite((s), sizeof(wchar_t), (l), stdout)
+#endif // lua_writewstring
+
+/* 打印宽字符串换行并完成刷新 */
+#if !defined(lua_writewline)
+#define lua_writewline()        (lua_writewstring(L"\n", 1), fflush(stdout))
+#endif // lua_writewline
+
+
+#endif // WIN_UTF8
 
 #endif //_EFW_H
