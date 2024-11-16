@@ -219,6 +219,15 @@
 		LUA_CDIR"?.dll;" \
 		LUA_CDIR"..\\lib\\lua\\" LUA_VDIR "\\?.dll;" \
 		LUA_CDIR"loadall.dll;" ".\\?.dll"
+#if(VS_LUA_DEBUG==1)  // 开启vs debug时，重新定义加载库的路径，并且把debug加载目录的优先级设为最高
+#define LUA_CPATH_DEBUG LUA_CDIR"..\\..\\modules\\lua_?\\lib\\Debug\\" ".\\?.dll;"
+#undef LUA_CPATH_DEFAULT
+#define LUA_CPATH_DEFAULT \
+		LUA_CPATH_DEBUG \
+		LUA_CDIR"?.dll;" \
+		LUA_CDIR"..\\lib\\lua\\" LUA_VDIR "\\?.dll;" \
+		LUA_CDIR"loadall.dll;" ".\\?.dll"
+#endif 
 #endif
 
 #else			/* }{ */

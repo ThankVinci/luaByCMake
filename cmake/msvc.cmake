@@ -3,6 +3,7 @@ set(CMAKE_BUILD_TYPE ) #MSVC取消build_type,交由VS的编译配置自己去管
 
 add_compile_options(/utf-8)
 add_compile_definitions(LUA_BUILD_AS_DLL ) 
+add_compile_definitions(VS_LUA_DEBUG=0)
 
 set(CMAKE_EXE_LINKER_FLAGS "" )
 
