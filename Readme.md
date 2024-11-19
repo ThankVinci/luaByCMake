@@ -5,6 +5,13 @@
 
 # 最近的更新
 
+## 2024.11.20
+
+1. 为了方便调试，`efw`模块的子模块目录`lua_exforwin`正式改名为`lua_efw`；
+2.  模仿`lua_writestring`实现宽字符串版本：`lua_writewstring`；
+3. 修复在`lua`命令行中导入`efw`模块会引起错误的问题，原因是宽字符串输出后翻译模式没有改回`_O_TEXT`导致命令行`readline`时`fputs`时以`_O_U16TEXT`模式输出了窄字符串触发了错误；
+4. 偶然发现一个`bug`，在导入`efw`模块之后`print`会失效，调试后发现是`msvcrt`的问题，即，最新一次更新的修正，使用`fwrite`写宽字符串，使用`msvcrt`把输出模式改成`U16`之后输出就无效了，不清楚原因，用了好几个大版本的`mingw_msvcrt`都一样，所以只能多加点兼容，如果使用`mingw_msvcrt`进行编译的话，就手动把`mingw.cmake`中的宏开关启动。`mingw_ucrt`不会有这个问题；
+
 ## 2024.6.14
 
 无意中看到有小伙伴不知道怎么编译这个项目，也不知道他是不是已经放弃了这个项目，我回忆了一下，已经废弃的autogen.lua文件中还有已经废弃的Readme_old.md中虽然有讲到如何编译，不过已经和我现在的操作不太一样了。详情请看`项目编译说明.md`，不过现在项目已经提供了构建脚本: [`build_by_mingw.bat`、`build_by_vs.bat`、`build_in_linux_macos.sh`]，放置在本项目的根目录下。
