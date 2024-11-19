@@ -43,8 +43,18 @@ static char* U16StrtoU8Str(wchar_t* u16_str) {
 目前只在luaB_print_utf8中使用这个函数实现输出，进行输出前，需要先设置翻译模式为_O_U16TEXT
 输出完成，刷新到文件流后需要把翻译模式改回_O_TEXT，避免一些情况下，lua原生使用fputs等接口输出导致错误
 */
+
 #if !defined(lua_writewstring) 
+#if USE_MSVCRT_ == 1 // 如果使用mingw-msvcrt进行编译的话，fwrite是无法成功输出宽字符串的
+// 使用 MSVCRT
+static size_t lua_writewstring(const wchar_t* s,const size_t l) {
+    for (size_t i = 0; i < l; i += 1)
+        fputwc(s[i], stdout); 
+    return l;
+}
+#else
 #define lua_writewstring(s,l)  fwrite((s), sizeof(wchar_t), (l), stdout)
+#endif
 #endif // lua_writewstring
 
 /* 打印宽字符串换行并完成刷新 */
