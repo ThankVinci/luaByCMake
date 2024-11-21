@@ -3,7 +3,7 @@
 # 在CMakeLists文件中project语句之后第一个include
 
 set(CMAKE_DEBUG_POSTFIX "d") # 设置debug的后缀
-set(CMAKE_BUILD_TYPE Release) # 设置构建类型为release
+# set(CMAKE_BUILD_TYPE Debug) # 设置构建类型为debug/release，在vs中直接打开cmake项目，此处的设置会导致VS中只能使用debug或者release，因此注释掉，VS中可以设置debug和release，命令行手动设置构建类型即可
 
 set(LUA_VERSION 5.4) #lua版本号，是模块的安装版本的目录，根据源码的版本手动进行更改
 set(_LUA_VERSION lua5.4.6) #lua实际版本号，并且是安装目录名，根据源码的版本手动进行更改
@@ -57,23 +57,29 @@ message(STATUS ${CMAKE_EXE_LINKER_FLAGS} )
 
 ## 删除某个目标的符号
 function(remove_symbols target )
+if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug")) # 非debug构建才删除符号
 if(BUILD_PLATFORM STREQUAL "AppleClang") 
 set(PARAMS "-S")
 else()
 set(PARAMS "-s")
 endif()
+message("strip: " ${target})
 add_custom_command(TARGET ${target}
 		POST_BUILD #在目标生成后再执行
 		COMMAND ${CMAKE_STRIP} ${PARAMS} "$<TARGET_FILE:${target}>")
+endif()
 endfunction()
 
 function(remove_symbols_unneeded target ) #删除不需要的符号
+if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug")) # 非debug构建才删除符号
 if(BUILD_PLATFORM STREQUAL "AppleClang") 
 set(PARAMS "-S")
 else()
 set(PARAMS "--strip-unneeded")
 endif()
+message(STATUS "strip: " ${target})
 add_custom_command(TARGET ${target}
 		POST_BUILD #在目标生成后再执行
 		COMMAND ${CMAKE_STRIP} ${PARAMS} "$<TARGET_FILE:${target}>")
+endif()
 endfunction()
