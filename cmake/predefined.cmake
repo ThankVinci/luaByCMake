@@ -6,7 +6,7 @@ set(CMAKE_DEBUG_POSTFIX "d") # 设置debug的后缀
 # set(CMAKE_BUILD_TYPE Debug) # 设置构建类型为debug/release，在vs中直接打开cmake项目，此处的设置会导致VS中只能使用debug或者release，因此注释掉，VS中可以设置debug和release，命令行手动设置构建类型即可
 
 set(LUA_VERSION 5.4) #lua版本号，是模块的安装版本的目录，根据源码的版本手动进行更改
-set(_LUA_VERSION lua5.4.6) #lua实际版本号，并且是安装目录名，根据源码的版本手动进行更改
+set(_LUA_VERSION lua5.4.7) #lua实际版本号，并且是安装目录名，根据源码的版本手动进行更改
 
 # 配置构建平台变量
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
