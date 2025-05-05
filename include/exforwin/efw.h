@@ -1,18 +1,18 @@
 #ifndef _EFW_H
 #define _EFW_H
 
-//±ê×¼¿â
+//æ ‡å‡†åº“
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-//lua ¿â
+//lua åº“
 #include "lprefix.h"
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
 
-//Windows×¨Êô
+//Windowsä¸“å±
 #ifdef _WIN32
 #include <windows.h>
 #include <wchar.h>
@@ -25,7 +25,7 @@ static wchar_t* U8StrtoU16Str(const char* u8_str) {
     size_t u8_len = strlen(u8_str);
     size_t u16_len = MultiByteToWideChar(CP_UTF8, 0, u8_str, u8_len, NULL, 0);
     wchar_t* u16_str = (wchar_t*)malloc((u16_len + 1) * sizeof(wchar_t));
-    MultiByteToWideChar(CP_UTF8, 0, u8_str, -1, u16_str, u16_len); //×ªÎª¿í×Ö·û´®¼´£¨UTF-16£©
+    MultiByteToWideChar(CP_UTF8, 0, u8_str, -1, u16_str, u16_len); //è½¬ä¸ºå®½å­—ç¬¦ä¸²å³ï¼ˆUTF-16ï¼‰
     u16_str[u16_len] = L'\0';
     return u16_str;
 }
@@ -34,19 +34,19 @@ static char* U16StrtoU8Str(wchar_t* u16_str) {
     size_t u16_len = wcslen(u16_str);
     size_t u8_len = WideCharToMultiByte(CP_UTF8, 0, u16_str, u16_len, NULL, 0, NULL, NULL);
     char* u8_str = (char*)malloc((u8_len + 1) * sizeof(char));
-    WideCharToMultiByte(CP_UTF8, 0, u16_str, -1, u8_str, u8_len, NULL, NULL); //×ªÎªUTF-8Õ­×Ö·û´®
+    WideCharToMultiByte(CP_UTF8, 0, u16_str, -1, u8_str, u8_len, NULL, NULL); //è½¬ä¸ºUTF-8çª„å­—ç¬¦ä¸²
     u8_str[u8_len] = '\0';
     return u8_str;
 }
 
-/* ÊµÏÖ¿í×Ö·û´®Êä³ö,ÊÇlua_writestringµÄ¿í×Ö·û´®°æ±¾
-Ä¿Ç°Ö»ÔÚluaB_print_utf8ÖĞÊ¹ÓÃÕâ¸öº¯ÊıÊµÏÖÊä³ö£¬½øĞĞÊä³öÇ°£¬ĞèÒªÏÈÉèÖÃ·­ÒëÄ£Ê½Îª_O_U16TEXT
-Êä³öÍê³É£¬Ë¢ĞÂµ½ÎÄ¼şÁ÷ºóĞèÒª°Ñ·­ÒëÄ£Ê½¸Ä»Ø_O_TEXT£¬±ÜÃâÒ»Ğ©Çé¿öÏÂ£¬luaÔ­ÉúÊ¹ÓÃfputsµÈ½Ó¿ÚÊä³öµ¼ÖÂ´íÎó
+/* å®ç°å®½å­—ç¬¦ä¸²è¾“å‡º,æ˜¯lua_writestringçš„å®½å­—ç¬¦ä¸²ç‰ˆæœ¬
+ç›®å‰åªåœ¨luaB_print_utf8ä¸­ä½¿ç”¨è¿™ä¸ªå‡½æ•°å®ç°è¾“å‡ºï¼Œè¿›è¡Œè¾“å‡ºå‰ï¼Œéœ€è¦å…ˆè®¾ç½®ç¿»è¯‘æ¨¡å¼ä¸º_O_U16TEXT
+è¾“å‡ºå®Œæˆï¼Œåˆ·æ–°åˆ°æ–‡ä»¶æµåéœ€è¦æŠŠç¿»è¯‘æ¨¡å¼æ”¹å›_O_TEXTï¼Œé¿å…ä¸€äº›æƒ…å†µä¸‹ï¼ŒluaåŸç”Ÿä½¿ç”¨fputsç­‰æ¥å£è¾“å‡ºå¯¼è‡´é”™è¯¯
 */
 
 #if !defined(lua_writewstring) 
-#if USE_MSVCRT_ == 1 // Èç¹ûÊ¹ÓÃmingw-msvcrt½øĞĞ±àÒëµÄ»°£¬fwriteÊÇÎŞ·¨³É¹¦Êä³ö¿í×Ö·û´®µÄ
-// Ê¹ÓÃ MSVCRT
+#if USE_MSVCRT_ == 1 // å¦‚æœä½¿ç”¨mingw-msvcrtè¿›è¡Œç¼–è¯‘çš„è¯ï¼Œfwriteæ˜¯æ— æ³•æˆåŠŸè¾“å‡ºå®½å­—ç¬¦ä¸²çš„
+// ä½¿ç”¨ MSVCRT
 static size_t lua_writewstring(const wchar_t* s,const size_t l) {
     for (size_t i = 0; i < l; i += 1)
         fputwc(s[i], stdout); 
@@ -57,7 +57,7 @@ static size_t lua_writewstring(const wchar_t* s,const size_t l) {
 #endif
 #endif // lua_writewstring
 
-/* ´òÓ¡¿í×Ö·û´®»»ĞĞ²¢Íê³ÉË¢ĞÂ */
+/* æ‰“å°å®½å­—ç¬¦ä¸²æ¢è¡Œå¹¶å®Œæˆåˆ·æ–° */
 #if !defined(lua_writewline)
 #define lua_writewline()        (lua_writewstring(L"\n", 1), fflush(stdout))
 #endif // lua_writewline

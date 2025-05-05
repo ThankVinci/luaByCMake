@@ -4,12 +4,12 @@
 static int luaB_print_utf8(lua_State* L) {
     int n = lua_gettop(L);  /* number of arguments */
     int i;
-    // Êä³ö¿í×Ö·û´®Ç°ÏÈ°Ñ·­ÒëÄ£Ê½¸Ä³É_O_U16TEXT
+    // è¾“å‡ºå®½å­—ç¬¦ä¸²å‰å…ˆæŠŠç¿»è¯‘æ¨¡å¼æ”¹æˆ_O_U16TEXT
     _setmode(_fileno(stdout), _O_U16TEXT);
     for (i = 1; i <= n; i++) {  /* for each argument */
         size_t l;
         const char* s_u8 = luaL_tolstring(L, i, &l);  /* convert it to string */
-        WCHAR* s = U8StrtoU16Str(s_u8); /* ½«char*µÄu8×Ö·û´®×ª»»Îªwchar*µÄu16×Ö·û´® */
+        WCHAR* s = U8StrtoU16Str(s_u8); /* å°†char*çš„u8å­—ç¬¦ä¸²è½¬æ¢ä¸ºwchar*çš„u16å­—ç¬¦ä¸² */
         if (i > 1)  /* not the first element? */
             lua_writewstring(L"\t", 1);  /* add a tab before it */
         lua_writewstring(s, wcslen(s));
@@ -17,18 +17,18 @@ static int luaB_print_utf8(lua_State* L) {
         lua_pop(L, 1);  /* pop result */
     }
     lua_writewline();
-    // Êä³öÍê³É²¢Ë¢ĞÂºó°Ñ·­ÒëÄ£Ê½¸Ä»Ø_O_TEXT
+    // è¾“å‡ºå®Œæˆå¹¶åˆ·æ–°åæŠŠç¿»è¯‘æ¨¡å¼æ”¹å›_O_TEXT
     _setmode(_fileno(stdout), _O_TEXT);
     return 0;
 }
 
 static const luaL_Reg base_funcs[] = {
-  {"print", luaB_print_utf8}, //Ìí¼ÓprintÊä³öutf8×Ö·û´®Ö§³Ö
+  {"print", luaB_print_utf8}, //æ·»åŠ printè¾“å‡ºutf8å­—ç¬¦ä¸²æ”¯æŒ
   {NULL, NULL}
 };
 
 int luaload_base_ex(lua_State* L) {
-    lua_getglobal(L, LUA_GNAME); //¶ÔÓÚbaseÄ£¿éµÄº¯Êı£¬Ö»ĞèÒªÉèµ½_G±íÖĞ¼´¿É
+    lua_getglobal(L, LUA_GNAME); //å¯¹äºbaseæ¨¡å—çš„å‡½æ•°ï¼Œåªéœ€è¦è®¾åˆ°_Gè¡¨ä¸­å³å¯
     luaL_setfuncs(L, base_funcs, 0);
     return 0;
 }

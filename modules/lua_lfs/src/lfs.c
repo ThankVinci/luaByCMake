@@ -19,7 +19,7 @@
 
 #ifdef _WIN32
 #define _WIN32_WINNT 0x600
-#define WIN_UTF8  //ÊÇ·ñ¿ªÆôUTF8Ö§³Ö
+#define WIN_UTF8  //æ˜¯å¦å¼€å¯UTF8æ”¯æŒ
 #endif
 
 #ifndef LFS_DO_NOT_USE_LARGE_FILE
@@ -74,7 +74,7 @@ static wchar_t* U8StrtoU16Str(const char* u8_str) {
     size_t u8_len = strlen(u8_str);
     size_t u16_len = MultiByteToWideChar(CP_UTF8, 0, u8_str, u8_len, NULL, 0);
     wchar_t* u16_str = malloc((u16_len+1) * sizeof(wchar_t));
-    MultiByteToWideChar(CP_UTF8, 0, u8_str, -1, u16_str , u16_len); //×ªÎª¿í×Ö·û´®¼´£¨UTF-16£©
+    MultiByteToWideChar(CP_UTF8, 0, u8_str, -1, u16_str , u16_len); //è½¬ä¸ºå®½å­—ç¬¦ä¸²å³ï¼ˆUTF-16ï¼‰
     u16_str[u16_len] = L'\0';
     return u16_str;
 }
@@ -83,7 +83,7 @@ static char* U16StrtoU8Str(wchar_t* u16_str) {
     size_t u16_len = wcslen(u16_str);
     size_t u8_len = WideCharToMultiByte(CP_UTF8, 0, u16_str, u16_len, NULL, 0, NULL, NULL);
     char* u8_str = malloc((u8_len+1) * sizeof(char));
-    WideCharToMultiByte(CP_UTF8, 0, u16_str, -1, u8_str, u8_len,NULL,NULL); //×ªÎªUTF-8Õ­×Ö·û´®
+    WideCharToMultiByte(CP_UTF8, 0, u16_str, -1, u8_str, u8_len,NULL,NULL); //è½¬ä¸ºUTF-8çª„å­—ç¬¦ä¸²
     u8_str[u8_len] = '\0';
     return u8_str;
 }
@@ -1303,19 +1303,19 @@ static void set_info(lua_State * L)
 
 
 static const struct luaL_Reg fslib[] = {
-  { "attributes", file_info }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
-  { "chdir", change_dir }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
-  { "currentdir", get_dir }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
-  { "dir", dir_iter_factory }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
-  { "link", make_link }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
+  { "attributes", file_info }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
+  { "chdir", change_dir }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
+  { "currentdir", get_dir }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
+  { "dir", dir_iter_factory }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
+  { "link", make_link }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
   { "lock", file_lock },
-  { "mkdir", make_dir }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
-  { "rmdir", remove_dir }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
-  { "symlinkattributes", link_info }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
+  { "mkdir", make_dir }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
+  { "rmdir", remove_dir }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
+  { "symlinkattributes", link_info }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
   { "setmode", lfs_f_setmode },
-  { "touch", file_utime }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
+  { "touch", file_utime }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
   { "unlock", file_unlock },
-  { "lock_dir", lfs_lock_dir }, //Íê³ÉÌí¼ÓUTF-8Ö§³Ö
+  { "lock_dir", lfs_lock_dir }, //å®Œæˆæ·»åŠ UTF-8æ”¯æŒ
   { NULL, NULL },
 };
 
