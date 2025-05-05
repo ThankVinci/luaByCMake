@@ -6,8 +6,8 @@ typedef luaL_Stream LStream;
 
 static int io_fclose(lua_State* L) {
 	LStream* p = tolstream(L);
-	int res = fclose(p->f);
-	return luaL_fileresult(L, (res == 0), NULL);
+    errno = 0;
+    return luaL_fileresult(L, (fclose(p->f) == 0), NULL);
 }
 
 static LStream* newprefile(lua_State* L) {
@@ -32,6 +32,7 @@ static int io_open_utf8(lua_State* L) {
 	LStream* p = newfile(L);
 	const char* md = mode;  /* to traverse/check mode */
 	luaL_argcheck(L, l_checkmode(md), 2, "invalid mode");
+    errno = 0;
 	p->f = _wfopen(w_filename, w_mode);
 	free(w_filename);
 	free(w_mode);
@@ -51,6 +52,7 @@ static int io_popen_utf8(lua_State* L) {
 	wchar_t* w_mode = U8StrtoU16Str(mode);
 	LStream* p = newprefile(L);
 	luaL_argcheck(L, l_checkmodep(mode), 2, "invalid mode");
+    errno = 0;
 	p->f = _wpopen(w_filename, w_mode);
 	p->closef = &io_pclose;
 	free(w_filename);
